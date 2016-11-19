@@ -24,6 +24,7 @@ public class MenuPlayButton extends Actor {
         setBounds((GameDemo.WIDTH / 2) - (region.getWidth() / 2), GameDemo.HEIGHT / 2 - (region.getHeight()), region.getWidth(), region.getHeight());
         addListener(new InputListener(){
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+
                 Gdx.app.log("debug", "touched down");
                 return true;
             }
@@ -32,7 +33,7 @@ public class MenuPlayButton extends Actor {
 
     @Override
     public void draw (Batch sb, float parentAlpha) {
-        sb.draw(region, (GameDemo.WIDTH / 2) - (region.getWidth() / 2), GameDemo.HEIGHT / 2 - (region.getHeight()));
+        sb.draw(region, (GameDemo.WIDTH / 2) - (region.getWidth() / 2), GameDemo.HEIGHT / 2 - (region.getHeight()/2));
 
     }
 }

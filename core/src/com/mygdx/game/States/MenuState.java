@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.MenuActors.MenuBackground;
+import com.mygdx.game.MenuActors.MenuPlayButton;
 
 /**
  * Created by flynn on 11/16/16.
@@ -13,8 +14,8 @@ import com.mygdx.game.MenuActors.MenuBackground;
 public class MenuState extends State {
 
     private Stage menuStage;
-    private com.mygdx.game.MenuActors.MenuBackground menuBackground;
-    private com.mygdx.game.MenuActors.MenuPlayButton menuPlayButton;
+    private MenuBackground menuBackground;
+    private MenuPlayButton menuPlayButton;
 
     public MenuState(GameStateManager gsm) {
         super(gsm);

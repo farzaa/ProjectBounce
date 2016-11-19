@@ -38,16 +38,19 @@ public class MenuBackground extends Actor {
 
         //Initialize title rectangle
         titleRectangle = new Rectangle(0, GameDemo.HEIGHT - 50, title.getWidth(), title.getHeight());
-        menuBarRectangle = new Rectangle(0, (GameDemo.HEIGHT - 350), GameDemo.WIDTH, menuBar.getHeight());
+        menuBarRectangle = new Rectangle(0, (GameDemo.HEIGHT - 355), GameDemo.WIDTH, menuBar.getHeight());
     }
 
     public void update(float dt) {
-        if(position.y > (GameDemo.HEIGHT - 350)) {
+
+        //This stops the title from flying off the top of the screen.
+        if(titleRectangle.getY() > (GameDemo.HEIGHT - 350)) {
             velocity.add(0, GRAVITY, 0);
             velocity.scl(dt);
             position.add(0, velocity.y, 0);
         }
 
+        //This lets the title bounce when it collides with the black bar.
         else if (titleRectangle.overlaps(menuBarRectangle)) {
             velocity.add(0, 15, 0);
             velocity.scl(dt);
@@ -55,7 +58,7 @@ public class MenuBackground extends Actor {
         }
 
         velocity.scl(1/dt);
-
+        //We want to update the value of the titleRectangle since its constantly moving!
         titleRectangle.set(0, position.y, title.getWidth(), title.getHeight());
     }
 
@@ -63,6 +66,7 @@ public class MenuBackground extends Actor {
     public void draw (Batch sb, float parentAlpha) {
         sb.draw(background,0, 0, GameDemo.WIDTH, GameDemo.HEIGHT);
         sb.draw(title, 0, position.y);
-        sb.draw(menuBar, 0, (GameDemo.HEIGHT - 350), GameDemo.WIDTH, menuBar.getHeight());
+        //I chose to to hard code to draw it at -350. This can be changed later to some fractional value.
+        sb.draw(menuBar, 0, (GameDemo.HEIGHT - 355), GameDemo.WIDTH, menuBar.getHeight());
     }
 }
