@@ -31,8 +31,8 @@ public class GameStateManager {
     public void set(State state) {
         states.pop();
         states.push(state);
-    }
 
+    }
     //Ensures we update correct state.
     public void update(float dt) {
         states.peek().update(dt);
