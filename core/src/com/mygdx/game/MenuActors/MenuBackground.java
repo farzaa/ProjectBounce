@@ -1,4 +1,4 @@
-package com.mygdx.game.States;
+package com.mygdx.game.MenuActors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
