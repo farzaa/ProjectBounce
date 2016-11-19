@@ -36,7 +36,7 @@ public class PlayState extends State {
     @Override
     protected void update(float dt) {
         handleInput();
-        playStateStage.addActor(new Ball());
+        playStateStage.addActor(new Ball(gsm));
     }
 
     @Override
