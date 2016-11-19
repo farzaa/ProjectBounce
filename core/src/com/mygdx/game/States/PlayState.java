@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.GameDemo;
-import com.mygdx.game.PlayActors.Ball;
+import com.mygdx.game.PlayActors.Bar;
 import com.mygdx.game.PlayActors.PlayStateHUD;
 
 /**
@@ -19,24 +21,26 @@ public class PlayState extends State {
 
     private Stage playStateStage;
     private PlayStateHUD playStateHUD;
+    private Bar bar1;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
         playStateStage = new Stage(new ScreenViewport());
         playStateHUD = new PlayStateHUD();
         playStateStage.addActor(playStateHUD);
+        bar1 = new Bar();
+        playStateStage.addActor(bar1);
         Gdx.input.setInputProcessor(playStateStage);
     }
 
     @Override
     protected void handleInput() {
-        //TO DO: Touch Control
+
     }
 
     @Override
     protected void update(float dt) {
         handleInput();
-        playStateStage.addActor(new Ball(gsm));
     }
 
     @Override

@@ -22,11 +22,18 @@ public class MenuPlayButton extends Actor {
     Texture region;
     GameStateManager gsm;
 
-    public MenuPlayButton (GameStateManager gsm) {
-        this.gsm = gsm;
+    public MenuPlayButton (GameStateManager gsmCurr) {
+        this.gsm = gsmCurr;
         setTouchable(Touchable.enabled);
         region = new Texture("play-button.png");
-        setBounds((GameDemo.WIDTH / 2) - (region.getWidth() / 2), GameDemo.HEIGHT / 2 - (region.getHeight()), region.getWidth(), region.getHeight());
+        setBounds((GameDemo.WIDTH / 2) - (region.getWidth() / 2), GameDemo.HEIGHT / 2 - (region.getHeight()/2), region.getWidth(), region.getHeight());
+        addListener(new InputListener(){
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                Gdx.app.log("debug", "touched play button!");
+                gsm.set(new PlayState(gsm));
+                return true;
+            }
+        });
     }
 
     @Override

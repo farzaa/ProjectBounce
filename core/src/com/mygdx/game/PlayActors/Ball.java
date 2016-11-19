@@ -12,8 +12,8 @@ import com.mygdx.game.States.GameStateManager;
  */
 
 public class Ball extends Actor{
-    Texture ballTexture;
-    GameStateManager gsm;
+    private Texture ballTexture;
+    private GameStateManager gsm;
 
     public Ball(GameStateManager gsm) {
         ballTexture = new Texture("ball_128_102.png");
