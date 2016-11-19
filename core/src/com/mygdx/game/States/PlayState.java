@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.GameDemo;
+import com.mygdx.game.PlayActors.Ball;
 import com.mygdx.game.PlayActors.PlayStateHUD;
 
 /**
@@ -35,6 +36,7 @@ public class PlayState extends State {
     @Override
     protected void update(float dt) {
         handleInput();
+        playStateStage.addActor(new Ball());
     }
 
     @Override
