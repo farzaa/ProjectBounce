@@ -39,12 +39,11 @@ public class MenuState extends State {
 
     @Override
     protected void handleInput() {
-        //
+        ;
     }
 
     @Override
     protected void update(float dt) {
-        handleInput();
         menuBackground.update(dt);
     }
 
