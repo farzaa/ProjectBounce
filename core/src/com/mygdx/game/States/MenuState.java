@@ -23,27 +23,16 @@ import com.mygdx.game.GameDemo;
  */
 
 public class MenuState extends State {
-    private Texture background;
-    private Texture title;
-    private Texture menuBar;
-
-    public static Vector3 position;
-    private Vector3 velocity;
-    private static final int GRAVITY = -5;
 
     private Stage menuStage;
+    private MenuBackground menuBackground;
+    private MenuPlayButton menuPlayButton;
 
     public MenuState(GameStateManager gsm) {
         super(gsm);
         menuStage = new Stage(new ScreenViewport());
-        position = new Vector3(0, GameDemo.HEIGHT - 200, 0);
-        velocity = new Vector3(0, GRAVITY, 0);
-        background = new Texture("menu-background.jpg");
-        title = new Texture("menu-title.png");
-        menuBar = new Texture("menu-black-bar.png");
-
-        MenuPlayButton menuPlayButton = new MenuPlayButton();
-        MenuBackground menuBackground = new MenuBackground();
+        menuPlayButton = new MenuPlayButton();
+        menuBackground = new MenuBackground();
         menuStage.addActor(menuBackground);
         menuStage.addActor(menuPlayButton);
         Gdx.input.setInputProcessor(menuStage);
@@ -51,26 +40,14 @@ public class MenuState extends State {
 
     @Override
     protected void handleInput() {
-
+        //This will most likely not be necessary her ebut I still need to have it here since we extend state.
+        ;
     }
 
     @Override
     protected void update(float dt) {
-        handleInput();
-        if(position.y > (GameDemo.HEIGHT - 50) - 350) {
-            velocity.add(0, GRAVITY, 0);
-            velocity.scl(dt);
-            position.add(0, velocity.y, 0);
-        }
+        menuBackground.update(dt);
 
-        else if (position.y < (GameDemo.HEIGHT - 50) - 350) {
-            velocity.add(0, 15, 0);
-            velocity.scl(dt);
-            position.add(0, velocity.y, 0);
-        }
-
-
-        velocity.scl(1/dt);
     }
 
     @Override
