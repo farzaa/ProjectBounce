@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -21,10 +22,12 @@ public class MenuBackground extends Actor {
     private Texture title;
     private Texture menuBar;
 
-    public  Vector3 position;
+    private Vector3 position;
     private Vector3 velocity;
     private static final int GRAVITY = -5;
 
+    private Rectangle titleRectangle;
+    private Rectangle menuBarRectangle;
 
     public MenuBackground () {
         background = new Texture("menu-background.jpg");
@@ -32,24 +35,28 @@ public class MenuBackground extends Actor {
         menuBar = new Texture("menu-black-bar.png");
         position = new Vector3(0, GameDemo.HEIGHT - 200, 0);
         velocity = new Vector3(0, GRAVITY, 0);
+
+        //Initialize title rectangle
+        titleRectangle = new Rectangle(0, GameDemo.HEIGHT - 50, title.getWidth(), title.getHeight());
+        menuBarRectangle = new Rectangle(0, (GameDemo.HEIGHT - 350), GameDemo.WIDTH, menuBar.getHeight());
     }
 
     public void update(float dt) {
-
         if(position.y > (GameDemo.HEIGHT - 350)) {
             velocity.add(0, GRAVITY, 0);
             velocity.scl(dt);
             position.add(0, velocity.y, 0);
         }
 
-        else if (position.y < (GameDemo.HEIGHT - 350)) {
+        else if (titleRectangle.overlaps(menuBarRectangle)) {
             velocity.add(0, 15, 0);
             velocity.scl(dt);
             position.add(0, velocity.y, 0);
         }
 
-
         velocity.scl(1/dt);
+
+        titleRectangle.set(0, position.y, title.getWidth(), title.getHeight());
     }
 
     @Override
