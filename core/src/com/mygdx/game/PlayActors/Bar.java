@@ -26,21 +26,23 @@ public class Bar extends Actor {
         setTouchable(Touchable.enabled);
         //Initialize. The bounds WILL change as the user slides the bar around.
         textureRegion = new Rectangle(0, 900, GameDemo.WIDTH, barTexture.getHeight());
-        this.setX(0);
-        this.setY(900);
-        this.setWidth(1080);
-        this.setHeight(30);
-        //setBounds(0, 900, barTexture.getWidth(), barTexture.getHeight());
+        //this.setX(0);
+        //this.setY(900);
+        //this.setWidth(1080);
+        //this.setHeight(100);
+        setBounds(textureRegion.getX(), textureRegion.getY(), barTexture.getWidth(), 50);
 
         addListener(new DragListener(){
             public void touchDragged (InputEvent event, float x, float y, int pointer) {
                 updateBarLocation(Gdx.input.getX());
+                System.out.println(Gdx.input.getX());
             }
         });
     }
 
     public void updateBarLocation(float x) {
         textureRegion.setX(x);
+        setBounds(textureRegion.getX(), textureRegion.getY(), barTexture.getWidth(), 50);
     }
 
     @Override
