@@ -22,6 +22,8 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.PlayActors.Ball;
 
+import java.util.ArrayList;
+
 /**
  * Created by flynn on 11/16/16.
  */
@@ -29,7 +31,7 @@ import com.mygdx.game.PlayActors.Ball;
 
 //I implement input processor here so that focus can change from the menu to the play screen.
 public class PlayState extends State implements InputProcessor {
-    public static final float GRAVITY = 5;
+    public static final float GRAVITY = 0.5f;
     public static final float PIXELS_TO_METERS = 100f;
 
     public World world;
@@ -38,8 +40,7 @@ public class PlayState extends State implements InputProcessor {
     Matrix4 debugMatrix;
 
     Texture playstateHUD;
-
-    Ball testBall;
+    ArrayList<Ball> ballList;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -53,8 +54,8 @@ public class PlayState extends State implements InputProcessor {
         Gdx.input.setInputProcessor(this);
         debugRenderer = new Box2DDebugRenderer();
         camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        testBall = new Ball(world);
-
+        ballList = new ArrayList<Ball>();
+        spawnBalls();
     }
 
     public void initWorld() {
@@ -66,9 +67,9 @@ public class PlayState extends State implements InputProcessor {
         //top edge
         createEdge(-w/2,h/2,w/2,h/2);
         //left edge.
-        createEdge(-w/2,-h/2,-w/2,h/2);
+        createEdge(-w/2,-3*h,-w/2,h/2);
         //right edge
-        createEdge(w/2,-h/2,w/2,h/2);
+        createEdge(w/2,-3*h,w/2,h/2);
 
     }
 
@@ -88,6 +89,13 @@ public class PlayState extends State implements InputProcessor {
 
         edgeShape.dispose();
     }
+
+    public void spawnBalls() {
+        for(int i = 0; i < 5; i++) {
+            ballList.add(new Ball(world));
+        }
+    }
+
     @Override
     protected void handleInput() {
 
@@ -104,8 +112,12 @@ public class PlayState extends State implements InputProcessor {
         // Step the physics simulation forward at a rate of 60hz
         world.step(1f/60f, 6, 2);
 
-        testBall.ballSprite.setPosition((testBall.ballBody.getPosition().x * PIXELS_TO_METERS) - testBall.ballSprite.getWidth()/2 , (testBall.ballBody.getPosition().y * PIXELS_TO_METERS) -testBall.ballSprite.getHeight()/2 );
-        testBall.ballSprite.setRotation((float)Math.toDegrees(testBall.ballBody.getAngle()));
+        for(int i = 0; i < ballList.size(); i++) {
+            Sprite currSprite = ballList.get(i).ballSprite;
+            Body currBody = ballList.get(i).ballBody;
+            currSprite.setPosition((currBody.getPosition().x * PIXELS_TO_METERS) - currSprite.getWidth()/2 , (currBody.getPosition().y * PIXELS_TO_METERS) -currSprite.getHeight()/2 );
+            currSprite.setRotation((float)Math.toDegrees(currBody.getAngle()));
+        }
 
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -116,11 +128,14 @@ public class PlayState extends State implements InputProcessor {
 
         sb.begin();
         sb.draw(playstateHUD, -540, -960);
-        Sprite sprite = testBall.ballSprite;
-        sb.draw(sprite, sprite.getX(), sprite.getY(), sprite.getOriginX(),
-                sprite.getOriginY(),
-                sprite.getWidth(), sprite.getHeight(), sprite.getScaleX(), sprite.
-                        getScaleY(), sprite.getRotation());
+        for(int i = 0; i < ballList.size(); i++) {
+            Sprite sprite = ballList.get(i).ballSprite;
+            Gdx.app.log("debug", sprite.getX() + " " + sprite.getY());
+            sb.draw(sprite, sprite.getX(), sprite.getY(), sprite.getOriginX(),
+                    sprite.getOriginY(),
+                    sprite.getWidth(), sprite.getHeight(), sprite.getScaleX(), sprite.
+                            getScaleY(), sprite.getRotation());
+        }
 
         sb.end();
         debugRenderer.render(world, debugMatrix);
@@ -143,6 +158,7 @@ public class PlayState extends State implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        spawnBalls();
         return false;
     }
 

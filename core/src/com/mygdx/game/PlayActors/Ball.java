@@ -37,18 +37,25 @@ public class Ball extends Actor{
     public Sprite ballSprite;
     public Body ballBody;
     public World world;
+    Random random;
     public Ball(final World world) {
         this.world = world;
+        random = new Random();
         ballSprite = new Sprite(new Texture("circle-image.png"));
 
         ballSprite.setScale(0.2f, 0.2f);
-        ballSprite.setPosition(-ballSprite.getWidth()/2, -800);
+
+        //TO DO: We want to randomize the position AND initial X velocity of the balls when they spawn.
+
+        ballSprite.setPosition(-(random.nextInt(800) - 400), random.nextInt(5000) - 6000);
+        System.out.println(ballSprite.getX() + " Y "  + ballSprite.getY());
+
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set((ballSprite.getX() + ballSprite.getWidth()/2) / PlayState.PIXELS_TO_METERS, (ballSprite.getY() + ballSprite.getHeight()/2) / PlayState.PIXELS_TO_METERS);
         ballBody = world.createBody(bodyDef);
-        ballBody.setLinearVelocity(new Vector2(15, 0));
+        ballBody.setLinearVelocity(new Vector2(random.nextInt(10) -5, 0));
 
         CircleShape shape = new CircleShape();
         shape.setRadius(0.5f);
