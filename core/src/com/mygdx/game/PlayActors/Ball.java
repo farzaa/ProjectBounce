@@ -3,6 +3,7 @@ package com.mygdx.game.PlayActors;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
@@ -10,11 +11,17 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.mygdx.game.GameDemo;
+import com.mygdx.game.States.PlayState;
 
 import java.util.Random;
 
@@ -22,29 +29,72 @@ import java.util.Random;
  * Created by flynn on 11/19/16.
  */
 
+
+//Still working on the ball class. In my mind the ball class will have a Sprite and Body attached to it.
+//This way we can track both things using the same reference and update using the same object. I might change this later.
 public class Ball extends Actor{
 
-    private final int UPWARD_ACCEL = 4;
-    private int X_ACCEL;
-    private Texture ballTexture;
-    private Vector2 ballVector;
-    private Circle ballCircle;
-    public Ball(Vector2 ballVector) {
+    public Sprite ballSprite;
+    public Body ballBody;
+    public World world;
+    public Ball(final World world) {
+        this.world = world;
+        ballSprite = new Sprite(new Texture("circle-image.png"));
 
-        ballTexture = new Texture("circle-image.png");
-        this.ballVector = ballVector;
-        Random rn = new Random();
-        X_ACCEL = rn.nextInt(20) -10;
-        ballCircle = new Circle(ballVector.x, ballVector.y, 1f);
+        ballSprite.setScale(0.2f, 0.2f);
+        ballSprite.setPosition(-ballSprite.getWidth()/2, -800);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set((ballSprite.getX() + ballSprite.getWidth()/2) / PlayState.PIXELS_TO_METERS, (ballSprite.getY() + ballSprite.getHeight()/2) / PlayState.PIXELS_TO_METERS);
+        ballBody = world.createBody(bodyDef);
+        ballBody.setLinearVelocity(new Vector2(15, 0));
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(0.5f);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0.1f;
+        fixtureDef.restitution = 0.5f;
+
+        ballBody.createFixture(fixtureDef);
+        shape.dispose();
+
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+                //if(contact.getFixtureB().get) {
+                    //world.destroyBody(ballBody);
+                    System.out.println("Contact");
+                //}
+
+            }
+            @Override
+            public void endContact(Contact contact) {
+
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+
+            }
+        });
     }
 
     public void update() {
+        //if()
+        //world.destroyBody();
 
-        ballVector.add(X_ACCEL, UPWARD_ACCEL);
     }
 
     @Override
     public void draw (Batch sb, float parentAlpha) {
-        sb.draw(ballTexture, ballVector.x, ballVector.y, ballTexture.getWidth()/2, ballTexture.getHeight()/2);
+        update();
     }
 }

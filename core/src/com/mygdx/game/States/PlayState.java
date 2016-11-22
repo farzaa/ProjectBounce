@@ -1,66 +1,60 @@
 package com.mygdx.game.States;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.GameDemo;
 import com.mygdx.game.PlayActors.Ball;
-import com.mygdx.game.PlayActors.Bar;
-import com.mygdx.game.PlayActors.PlayStateHUD;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * Created by flynn on 11/16/16.
  */
 
 
-public class PlayState extends State {
+//I implement input processor here so that focus can change from the menu to the play screen.
+public class PlayState extends State implements InputProcessor {
     public static final float GRAVITY = 5;
     public static final float PIXELS_TO_METERS = 100f;
 
-    World world;
+    public World world;
     Camera camera;
     Box2DDebugRenderer debugRenderer;
     Matrix4 debugMatrix;
 
     Texture playstateHUD;
 
+    Ball testBall;
+
     public PlayState(GameStateManager gsm) {
         super(gsm);
+        //Many tutorials say to this step, but things seems to be working fine without it.
         //Box2D.init();
 
         playstateHUD = new Texture("playstate-hud.png");
         //First actually create World and add basic boundaries.
         initWorld();
-        //Gdx.input.setInputProcessor(this);
+
+        Gdx.input.setInputProcessor(this);
         debugRenderer = new Box2DDebugRenderer();
         camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        testBall = new Ball(world);
+
     }
 
     public void initWorld() {
@@ -69,14 +63,13 @@ public class PlayState extends State {
         float w = Gdx.graphics.getWidth()/PIXELS_TO_METERS;
         float h = Gdx.graphics.getHeight()/PIXELS_TO_METERS - 20/PIXELS_TO_METERS;
         //Now create the boundaries. Pass it the vertexes.
-        //bottom edge
-        createEdge(-w/2,-h/2,w/2,-h/2);
+        //top edge
+        createEdge(-w/2,h/2,w/2,h/2);
         //left edge.
         createEdge(-w/2,-h/2,-w/2,h/2);
         //right edge
         createEdge(w/2,-h/2,w/2,h/2);
 
-        //TO DO: top edge.
     }
 
     public void createEdge (float vx1, float vy1, float vx2, float vy2){
@@ -111,6 +104,9 @@ public class PlayState extends State {
         // Step the physics simulation forward at a rate of 60hz
         world.step(1f/60f, 6, 2);
 
+        testBall.ballSprite.setPosition((testBall.ballBody.getPosition().x * PIXELS_TO_METERS) - testBall.ballSprite.getWidth()/2 , (testBall.ballBody.getPosition().y * PIXELS_TO_METERS) -testBall.ballSprite.getHeight()/2 );
+        testBall.ballSprite.setRotation((float)Math.toDegrees(testBall.ballBody.getAngle()));
+
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -120,8 +116,54 @@ public class PlayState extends State {
 
         sb.begin();
         sb.draw(playstateHUD, -540, -960);
+        Sprite sprite = testBall.ballSprite;
+        sb.draw(sprite, sprite.getX(), sprite.getY(), sprite.getOriginX(),
+                sprite.getOriginY(),
+                sprite.getWidth(), sprite.getHeight(), sprite.getScaleX(), sprite.
+                        getScaleY(), sprite.getRotation());
 
         sb.end();
         debugRenderer.render(world, debugMatrix);
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        Gdx.app.log("debug", "X: " + screenX + " " + screenY);
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }
