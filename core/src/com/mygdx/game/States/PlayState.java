@@ -21,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.PlayActors.Ball;
+import com.mygdx.game.PlayActors.BarBox2D;
 
 import java.util.ArrayList;
 
@@ -42,6 +43,8 @@ public class PlayState extends State implements InputProcessor {
     Texture playstateHUD;
     ArrayList<Ball> ballList;
 
+    BarBox2D bar;
+
     public PlayState(GameStateManager gsm) {
         super(gsm);
         //Many tutorials say to this step, but things seems to be working fine without it.
@@ -53,9 +56,11 @@ public class PlayState extends State implements InputProcessor {
 
         Gdx.input.setInputProcessor(this);
         debugRenderer = new Box2DDebugRenderer();
+
         camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         ballList = new ArrayList<Ball>();
         spawnBalls();
+
     }
 
     public void initWorld() {
@@ -67,11 +72,26 @@ public class PlayState extends State implements InputProcessor {
         //top edge
         createEdge(-w/2,h/2,w/2,h/2);
         //left edge.
-        createEdge(-w/2,-3*h,-w/2,h/2);
+        //createEdge(-w/2,-7*h,-w/2,h/2);
+
+        //TESTING
+        //Create part of left edge
+        createEdge(-w/2 + 1, h/2, -w/2 + 1, 20/PIXELS_TO_METERS);
+
+        //Now create the REST of it.
+        createEdge(-w/2 + 1, -20/PIXELS_TO_METERS ,-w/2 + 1, -7*h);
+
         //right edge
-        createEdge(w/2,-3*h,w/2,h/2);
+        createEdge(w/2,-7*h,w/2,h/2);
+
+        //Now create the bars
+        bar = new BarBox2D(world);
+    }
+
+    public void createBar() {
 
     }
+
 
     public void createEdge (float vx1, float vy1, float vx2, float vy2){
         BodyDef edgeInitial = new BodyDef();
@@ -130,12 +150,14 @@ public class PlayState extends State implements InputProcessor {
         sb.draw(playstateHUD, -540, -960);
         for(int i = 0; i < ballList.size(); i++) {
             Sprite sprite = ballList.get(i).ballSprite;
-            Gdx.app.log("debug", sprite.getX() + " " + sprite.getY());
+            //Gdx.app.log("debug", sprite.getX() + " " + sprite.getY());
             sb.draw(sprite, sprite.getX(), sprite.getY(), sprite.getOriginX(),
                     sprite.getOriginY(),
                     sprite.getWidth(), sprite.getHeight(), sprite.getScaleX(), sprite.
                             getScaleY(), sprite.getRotation());
         }
+
+        sb.draw(bar.barSprite, bar.barSprite.getX(),bar.barSprite.getY());
 
         sb.end();
         debugRenderer.render(world, debugMatrix);
@@ -158,7 +180,7 @@ public class PlayState extends State implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        spawnBalls();
+        //spawnBalls();
         return false;
     }
 
@@ -169,7 +191,19 @@ public class PlayState extends State implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        Gdx.app.log("debug", "X: " + screenX + " " + screenY);
+        //Check if bar is being touched!
+        Gdx.app.log("debug", "Drag: " + screenX + " " + screenY);
+        Gdx.app.log("debug", "BarPos : " + bar.barBody.getPosition().x + " " + bar.barBody.getPosition().y);
+
+
+        //if(screenX-540 < 100 && -100 > screenX -540) {
+            bar.barBody.setTransform(screenX - 540, bar.barBody.getPosition().y, 0);
+            Gdx.app.log("debug", "BarSpriteLoc: " + bar.barSprite.getX());
+            //if(bar.barSprite.getWidth()/2 + 1080  >= 0)
+            //bar.barSprite.setPosition(screenX - 540 - bar.barSprite.getWidth(), 0);
+        //}
+
+        //bar.barBody.setLinearVelocity(1,0);
         return false;
     }
 

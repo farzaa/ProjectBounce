@@ -28,13 +28,13 @@ public class MenuState extends State {
         menuStage.addActor(menuPlayButton);
         Gdx.input.setInputProcessor(menuStage);
 
-        menuPlayButton.addListener(new InputListener(){
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.log("debug", "touched play button!");
-                gsm.set(new PlayState(gsm));
-                return true;
-            }
-        });
+//        menuPlayButton.addListener(new InputListener(){
+//            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+//                Gdx.app.log("debug", "touched play button!");
+//                gsm.set(new PlayState(gsm));
+//                return true;
+//            }
+//        });
     }
 
     @Override

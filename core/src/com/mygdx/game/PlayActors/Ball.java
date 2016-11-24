@@ -47,7 +47,7 @@ public class Ball extends Actor{
 
         //TO DO: We want to randomize the position AND initial X velocity of the balls when they spawn.
 
-        ballSprite.setPosition(-(random.nextInt(800) - 400), random.nextInt(5000) - 6000);
+        ballSprite.setPosition((random.nextInt(300) - 300), random.nextInt(4000) - 5500);
         System.out.println(ballSprite.getX() + " Y "  + ballSprite.getY());
 
 
@@ -73,7 +73,7 @@ public class Ball extends Actor{
             public void beginContact(Contact contact) {
                 //if(contact.getFixtureB().get) {
                     //world.destroyBody(ballBody);
-                    System.out.println("Contact");
+                    //System.out.println("Contact");
                 //}
 
             }
