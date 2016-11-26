@@ -1,6 +1,7 @@
 package com.mygdx.game.PlayActors;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -24,6 +25,7 @@ import com.mygdx.game.GameDemo;
 import com.mygdx.game.States.PlayState;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by flynn on 11/19/16.
@@ -32,15 +34,23 @@ import java.util.Random;
 
 //Still working on the ball class. In my mind the ball class will have a Sprite and Body attached to it.
 //This way we can track both things using the same reference and update using the same object. I might change this later.
-public class Ball extends Actor{
+public class Ball {
 
     public Sprite ballSprite;
     public Body ballBody;
     public World world;
+    public boolean destroyBool;
+    public AtomicBoolean destroyBoolAtomic;
+
+    public int bounceCounter;
+
     Random random;
+
     public Ball(final World world) {
         this.world = world;
         random = new Random();
+        destroyBoolAtomic = new AtomicBoolean(false);
+
         ballSprite = new Sprite(new Texture("circle-image.png"));
 
         ballSprite.setScale(0.2f, 0.2f);
@@ -63,45 +73,11 @@ public class Ball extends Actor{
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 0.1f;
-        fixtureDef.restitution = 0.5f;
+        fixtureDef.restitution = 0.8f;
 
         ballBody.createFixture(fixtureDef);
         shape.dispose();
 
-        world.setContactListener(new ContactListener() {
-            @Override
-            public void beginContact(Contact contact) {
-                //if(contact.getFixtureB().get) {
-                    //world.destroyBody(ballBody);
-                    //System.out.println("Contact");
-                //}
-
-            }
-            @Override
-            public void endContact(Contact contact) {
-
-            }
-
-            @Override
-            public void preSolve(Contact contact, Manifold oldManifold) {
-
-            }
-
-            @Override
-            public void postSolve(Contact contact, ContactImpulse impulse) {
-
-            }
-        });
     }
 
-    public void update() {
-        //if()
-        //world.destroyBody();
-
-    }
-
-    @Override
-    public void draw (Batch sb, float parentAlpha) {
-        update();
-    }
 }
