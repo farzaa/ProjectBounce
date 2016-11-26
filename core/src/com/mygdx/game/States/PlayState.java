@@ -125,13 +125,9 @@ public class PlayState extends State implements InputProcessor {
         //top edge
         createEdge(-w/2,h/2,w/2,h/2);
         //left edge.
-        //createEdge(-w/2,-7*h,-w/2,h/2);
 
-        //TESTING!
-
-        //TESTING!
-        //Create part of left edge
-        createEdge(-w/2 + 1, h/2, -w/2 + 1, 20/PIXELS_TO_METERS);
+        createEdge(-w/2 + 1, 960/PIXELS_TO_METERS, -w/2 + 1, 430/PIXELS_TO_METERS);
+        createEdge(-w/2 + 1, 375/PIXELS_TO_METERS, -w/2 + 1, 40/PIXELS_TO_METERS);
 
         //Now create the REST of it.
         createEdge(-w/2 + 1, -20/PIXELS_TO_METERS ,-w/2 + 1, -7*h);
@@ -293,13 +289,13 @@ public class PlayState extends State implements InputProcessor {
         if(bar.boundingRectangle.contains(screenX - 540, screenY - 960)) {
             bar.barBodyLeft.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS - 2270/PIXELS_TO_METERS, bar.barBodyLeft.getPosition().y, 0);
             bar.barBodyRight.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS + 2270/PIXELS_TO_METERS, bar.barBodyRight.getPosition().y, 0);
-            bar.barSprite.setPosition(screenX - 1080 - 540, 0);
+            bar.barSprite.setPosition(screenX - 1080 - 540, bar.barSprite.getY());
         }
 
-        if(bar2.boundingRectangle.contains(screenX - 540, screenY - 960)) {
-            bar2.barBodyLeft.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS - 2270/PIXELS_TO_METERS, bar.barBodyLeft.getPosition().y, 0);
-            bar2.barBodyRight.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS + 2270/PIXELS_TO_METERS, bar.barBodyRight.getPosition().y, 0);
-            bar2.barSprite.setPosition(screenX - 1080 - 540, 0);
+        if(bar2.boundingRectangle.contains(screenX - 540, screenY - 140)) {
+            bar2.barBodyLeft.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS - 2270/PIXELS_TO_METERS, bar2.barBodyLeft.getPosition().y, 0);
+            bar2.barBodyRight.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS + 2270/PIXELS_TO_METERS, bar2.barBodyRight.getPosition().y, 0);
+            bar2.barSprite.setPosition(screenX - 1080 - 540, bar2.barSprite.getY());
         }
 
 

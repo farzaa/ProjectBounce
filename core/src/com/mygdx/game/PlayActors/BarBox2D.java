@@ -40,7 +40,7 @@ public class BarBox2D {
         BodyDef barBodyInitial = new BodyDef();
         //StaticBody because our edges will not move.
         barBodyInitial.type = BodyDef.BodyType.StaticBody;
-        barBodyInitial.position.set(-2*w - 110/PIXELS_TO_METERS, y/PIXELS_TO_METERS + offset/PIXELS_TO_METERS);
+        barBodyInitial.position.set(-2*w - 110/PIXELS_TO_METERS, y/PIXELS_TO_METERS);
 
         PolygonShape box = new PolygonShape();
         box.setAsBox(2*w , 15/PIXELS_TO_METERS);
@@ -57,7 +57,7 @@ public class BarBox2D {
         //now create the right bar
         BodyDef barBodyInitialRight = new BodyDef();
         barBodyInitialRight.type = BodyDef.BodyType.StaticBody;
-        barBodyInitialRight.position.set(2*w + 110/PIXELS_TO_METERS, y/PIXELS_TO_METERS + offset/PIXELS_TO_METERS);
+        barBodyInitialRight.position.set(2*w + 110/PIXELS_TO_METERS, y/PIXELS_TO_METERS);
 
         PolygonShape boxRight = new PolygonShape();
         boxRight.setAsBox(2*w , 15/PIXELS_TO_METERS);
