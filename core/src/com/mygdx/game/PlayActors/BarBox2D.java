@@ -30,7 +30,7 @@ public class BarBox2D {
     public Rectangle boundingRectangle;
     public static final float PIXELS_TO_METERS = 100f;
 
-    public BarBox2D(final World world, float y) {
+    public BarBox2D(final World world, float y, float offset) {
         this.world = world;
         barSprite = new Sprite(new Texture("menu-black-bar-stripes.png"));
         float w = Gdx.graphics.getWidth()/PIXELS_TO_METERS;
@@ -40,7 +40,7 @@ public class BarBox2D {
         BodyDef barBodyInitial = new BodyDef();
         //StaticBody because our edges will not move.
         barBodyInitial.type = BodyDef.BodyType.StaticBody;
-        barBodyInitial.position.set(-2*w - 110/PIXELS_TO_METERS, y/PIXELS_TO_METERS + 10/PIXELS_TO_METERS);
+        barBodyInitial.position.set(-2*w - 110/PIXELS_TO_METERS, y/PIXELS_TO_METERS + offset/PIXELS_TO_METERS);
 
         PolygonShape box = new PolygonShape();
         box.setAsBox(2*w , 15/PIXELS_TO_METERS);
@@ -57,7 +57,7 @@ public class BarBox2D {
         //now create the right bar
         BodyDef barBodyInitialRight = new BodyDef();
         barBodyInitialRight.type = BodyDef.BodyType.StaticBody;
-        barBodyInitialRight.position.set(2*w + 110/PIXELS_TO_METERS, y/PIXELS_TO_METERS + 10/PIXELS_TO_METERS);
+        barBodyInitialRight.position.set(2*w + 110/PIXELS_TO_METERS, y/PIXELS_TO_METERS + offset/PIXELS_TO_METERS);
 
         PolygonShape boxRight = new PolygonShape();
         boxRight.setAsBox(2*w , 15/PIXELS_TO_METERS);
@@ -69,11 +69,9 @@ public class BarBox2D {
         barBodyRight.createFixture(barDefRight);
 
         box.dispose();
-        barSprite.setPosition(-barSprite.getWidth()/2, y-barSprite.getHeight()/2);
 
-        //now create the rectangle that will bound the entire bar. This way, the bar ONLY moves when the user actually touches it.
-        boundingRectangle =  new Rectangle(0, 0, Gdx.graphics.getWidth(), 40);
-
+        //TO DO now create the rectangle that will bound the entire bar. This way, the bar ONLY moves when the user actually touches it.
+        boundingRectangle = new Rectangle(-540, y - 100, Gdx.graphics.getWidth(), 200);
 
     }
 }
