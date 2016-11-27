@@ -51,6 +51,7 @@ public class PlayState extends State implements InputProcessor {
 
     BarBox2D bar;
     BarBox2D bar2;
+    BarBox2D bar3;
 
 
     public PlayState(GameStateManager gsm) {
@@ -83,6 +84,7 @@ public class PlayState extends State implements InputProcessor {
                     for (int i = 0; i < ballList.size(); i++) {
                         if(ballList.get(i).ballBody.equals(bodyB)) {
                             ballList.get(i).bounceCounter++;
+                            ballList.get(i).ballBody.applyAngularImpulse();
                         }
                     }
                 }
@@ -125,7 +127,6 @@ public class PlayState extends State implements InputProcessor {
         //top edge
         createEdge(-w/2,h/2,w/2,h/2);
         //left edge.
-
         createEdge(-w/2 + 1, 960/PIXELS_TO_METERS, -w/2 + 1, 430/PIXELS_TO_METERS);
         createEdge(-w/2 + 1, 375/PIXELS_TO_METERS, -w/2 + 1, 40/PIXELS_TO_METERS);
 
@@ -140,6 +141,8 @@ public class PlayState extends State implements InputProcessor {
         bar = new BarBox2D(world, 0, 10);
 
         bar2 = new BarBox2D(world, 400, 0);
+
+        bar3 = new BarBox2D(world, -400, 0);
 
     }
 
@@ -176,6 +179,7 @@ public class PlayState extends State implements InputProcessor {
 
     }
 
+    //this checks for balls on our destroy list and destroys them as necessary.
     public void checkBalls() {
 
         for(int i = 0; i < ballList.size(); i++) {
@@ -229,8 +233,7 @@ public class PlayState extends State implements InputProcessor {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         sb.setProjectionMatrix(camera.combined);
-        debugMatrix = sb.getProjectionMatrix().cpy().scale(PIXELS_TO_METERS,
-                PIXELS_TO_METERS, 0);
+        debugMatrix = sb.getProjectionMatrix().cpy().scale(PIXELS_TO_METERS, PIXELS_TO_METERS, 0);
 
 
         sb.begin();
@@ -248,6 +251,7 @@ public class PlayState extends State implements InputProcessor {
         //drawing bars
         sb.draw(bar.barSprite, bar.barSprite.getX(),bar.barSprite.getY());
         sb.draw(bar2.barSprite, bar2.barSprite.getX(),bar2.barSprite.getY());
+        sb.draw(bar3.barSprite, bar3.barSprite.getX(), bar3.barSprite.getY());
 
         sb.end();
         debugRenderer.render(world, debugMatrix);
@@ -286,20 +290,27 @@ public class PlayState extends State implements InputProcessor {
         Gdx.app.log("debug", "BarPos : " + bar.barBodyLeft.getPosition().x + " " + 0);
         Gdx.app.log("debug", "BarSpriteLoc: " + bar.barSprite.getX() + " " + bar.barSprite.getY());
 
+        //logic for middle bar
         if(bar.boundingRectangle.contains(screenX - 540, screenY - 960)) {
             bar.barBodyLeft.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS - 2270/PIXELS_TO_METERS, bar.barBodyLeft.getPosition().y, 0);
             bar.barBodyRight.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS + 2270/PIXELS_TO_METERS, bar.barBodyRight.getPosition().y, 0);
             bar.barSprite.setPosition(screenX - 1080 - 540, bar.barSprite.getY());
         }
 
+        //logic for top bar
         if(bar2.boundingRectangle.contains(screenX - 540, screenY - 140)) {
             bar2.barBodyLeft.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS - 2270/PIXELS_TO_METERS, bar2.barBodyLeft.getPosition().y, 0);
             bar2.barBodyRight.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS + 2270/PIXELS_TO_METERS, bar2.barBodyRight.getPosition().y, 0);
             bar2.barSprite.setPosition(screenX - 1080 - 540, bar2.barSprite.getY());
         }
 
+        //logic for bottom bar
+        if(bar3.boundingRectangle.contains(screenX - 540, screenY - 1800)) {
+            bar3.barBodyLeft.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS - 2270/PIXELS_TO_METERS, bar3.barBodyLeft.getPosition().y, 0);
+            bar3.barBodyRight.setTransform(screenX/PIXELS_TO_METERS - 540/PIXELS_TO_METERS + 2270/PIXELS_TO_METERS, bar3.barBodyRight.getPosition().y, 0);
+            bar3.barSprite.setPosition(screenX - 1080 - 540, bar3.barSprite.getY());
+        }
 
-        //bar.barBody.setLinearVelocity(1,0);
         return false;
     }
 
