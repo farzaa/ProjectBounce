@@ -22,7 +22,7 @@ public class MenuState extends State {
     public MenuState(final GameStateManager gsm) {
         super(gsm);
         menuStage = new Stage(new ScreenViewport());
-        menuPlayButton = new MenuPlayButton(gsm);
+        menuPlayButton = new MenuPlayButton(gsm, this);
         menuBackground = new MenuBackground();
         menuStage.addActor(menuBackground);
         menuStage.addActor(menuPlayButton);
@@ -39,7 +39,13 @@ public class MenuState extends State {
 
     @Override
     protected void handleInput() {
-
+        menuPlayButton.addListener(new InputListener(){
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                Gdx.app.log("debug", "touched play button!");
+                //gsm.set(new PlayState(gsm));
+                return true;
+            }
+        });
     }
 
     @Override
@@ -53,4 +59,14 @@ public class MenuState extends State {
         menuStage.draw();
         menuStage.act(Gdx.graphics.getDeltaTime());
     }
+
+    //do not want any nasty memory leaks.
+    public void dispose() {
+        Gdx.app.log("debug", "Disposing menu state assets...");
+        menuBackground.background.dispose();
+        menuBackground.menuBar.dispose();
+        menuBackground.title.dispose();
+        menuPlayButton.region.dispose();
+    }
+
 }

@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.mygdx.game.GameDemo;
 import com.mygdx.game.States.GameStateManager;
+import com.mygdx.game.States.MenuState;
 import com.mygdx.game.States.PlayState;
 
 /**
@@ -19,10 +20,10 @@ import com.mygdx.game.States.PlayState;
  */
 
 public class MenuPlayButton extends Actor {
-    Texture region;
+    public Texture region;
     GameStateManager gsm;
 
-    public MenuPlayButton (GameStateManager gsmCurr) {
+    public MenuPlayButton (GameStateManager gsmCurr, final MenuState menustate) {
         this.gsm = gsmCurr;
         setTouchable(Touchable.enabled);
         region = new Texture("play-button.png");
@@ -30,6 +31,7 @@ public class MenuPlayButton extends Actor {
         addListener(new InputListener(){
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 Gdx.app.log("debug", "touched play button!");
+                menustate.dispose();
                 gsm.set(new PlayState(gsm));
                 return true;
             }

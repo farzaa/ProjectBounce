@@ -18,9 +18,9 @@ import com.mygdx.game.GameDemo;
  */
 
 public class MenuBackground extends Actor {
-    private Texture background;
-    private Texture title;
-    private Texture menuBar;
+    public Texture background;
+    public Texture title;
+    public Texture menuBar;
 
     private Vector3 position;
     private Vector3 velocity;

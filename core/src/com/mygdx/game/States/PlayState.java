@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -41,11 +42,15 @@ public class PlayState extends State implements InputProcessor {
     public static final float PIXELS_TO_METERS = 100f;
 
     public World world;
+    GameStateManager gsm;
     Camera camera;
     Box2DDebugRenderer debugRenderer;
     Matrix4 debugMatrix;
+    BitmapFont font;
 
     Texture playstateHUD;
+    Texture livesTexture;
+
     ArrayList<Ball> ballList;
     ArrayList<Ball> destroyBallList;
 
@@ -53,12 +58,20 @@ public class PlayState extends State implements InputProcessor {
     BarBox2D bar2;
     BarBox2D bar3;
 
+    int liveCount;
+    int score;
+
+
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
+        this.gsm = gsm;
         //Many tutorials say to this step, but things seems to be working fine without it.
         //Box2D.init();
         playstateHUD = new Texture("playstate-hud.png");
+        livesTexture = new Texture("heart-image.png");
+        font = new BitmapFont();
+        font.getData().setScale(5, 5);
         //First actually create World and add basic boundaries.
         initWorld();
 
@@ -69,6 +82,8 @@ public class PlayState extends State implements InputProcessor {
         ballList = new ArrayList<Ball>();
         destroyBallList = new ArrayList<Ball>();
         spawnBalls();
+
+        liveCount = 3;
 
         //this contains all the logic for contact within the game.
         world.setContactListener(new ContactListener() {
@@ -85,7 +100,7 @@ public class PlayState extends State implements InputProcessor {
                         //We want to find the ball that touched the bar.
                         if(ballList.get(i).ballBody.equals(bodyB)) {
                             ballList.get(i).bounceCounter++;
-                            //Keep on adding force to the ball as long as it touches a bar so things stay moving. 
+                            //Keep on adding force to the ball as long as it touches a bar so things stay moving.
                             ballList.get(i).ballBody.applyForceToCenter(new Vector2(0, 5), true);
                         }
                     }
@@ -107,159 +122,18 @@ public class PlayState extends State implements InputProcessor {
 
             @Override
             public void endContact(Contact contact) {
-
             }
 
             @Override
             public void preSolve(Contact contact, Manifold oldManifold) {
-
             }
 
             @Override
             public void postSolve(Contact contact, ContactImpulse impulse) {
-
             }
         });
     }
 
-    public void initWorld() {
-        //Create world, give it gravity.
-        world = new World(new Vector2(0, GRAVITY), true);
-        float w = Gdx.graphics.getWidth()/PIXELS_TO_METERS;
-        float h = Gdx.graphics.getHeight()/PIXELS_TO_METERS - 20/PIXELS_TO_METERS;
-        //Now create the boundaries. Pass it the vertexes.
-        //top edge
-        createEdge(-w/2,h/2,w/2,h/2);
-        //left edge.
-        createEdge(-w/2 + 1, 960/PIXELS_TO_METERS, -w/2 + 1, 430/PIXELS_TO_METERS);
-        createEdge(-w/2 + 1, 375/PIXELS_TO_METERS, -w/2 + 1, 40/PIXELS_TO_METERS);
-
-        //Now create the REST of it.
-        createEdge(-w/2 + 1, -20/PIXELS_TO_METERS ,-w/2 + 1, -7*h);
-
-        //right edge
-        createEdge(w/2,-7*h,w/2,h/2);
-
-        //Now create the bars
-        //pass in world and the y coordinates of the bar. The x is not passed since it should all be centered already.
-        bar = new BarBox2D(world, 0, 10);
-
-        bar2 = new BarBox2D(world, 400, 0);
-
-        bar3 = new BarBox2D(world, -400, 0);
-
-    }
-
-    public void createBar() {
-
-    }
-
-
-    public void createEdge (float vx1, float vy1, float vx2, float vy2){
-        BodyDef edgeInitial = new BodyDef();
-        //StaticBody because our edges will not move.
-        edgeInitial.type = BodyDef.BodyType.StaticBody;
-        edgeInitial.position.set(0,0);
-
-        EdgeShape edgeShape = new EdgeShape();
-        edgeShape.set(vx1, vy1, vx2, vy2);
-        FixtureDef leftEdgeFix = new FixtureDef();
-        leftEdgeFix.shape = edgeShape;
-
-        Body edgeFinal = world.createBody(edgeInitial);
-        edgeFinal.createFixture(leftEdgeFix);
-
-        edgeShape.dispose();
-    }
-
-    public void spawnBalls() {
-        for(int i = 0; i < 5; i++) {
-            ballList.add(new Ball(world));
-        }
-    }
-
-    @Override
-    protected void handleInput() {
-
-    }
-
-    //this checks for balls on our destroy list and destroys them as necessary.
-    public void checkBalls() {
-
-        for(int i = 0; i < ballList.size(); i++) {
-
-            if(ballList.get(i).ballBody.getPosition().y > 8) {
-                ballList.get(i).destroyBoolAtomic.set(true);
-            }
-
-            if (ballList.get(i).destroyBoolAtomic.get() == true) {
-                destroyBallList.add(ballList.get(i));
-                Gdx.app.log("debug", "added to destroy list.");
-            }
-        }
-
-        //remove balls from our list.
-        if(!world.isLocked()) {
-            for (int i = 0; i < destroyBallList.size(); i++) {
-                world.destroyBody(destroyBallList.get(i).ballBody);
-                ballList.remove(destroyBallList.get(i));
-                Gdx.app.log("debug", "destroying");
-            }
-        }
-
-        //re-init destroy ball list.
-        destroyBallList =  new ArrayList<Ball>();
-    }
-
-
-    @Override
-    protected void update(float dt) {
-
-    }
-
-    @Override
-    protected void render(SpriteBatch sb) {
-        camera.update();
-
-        // Step the physics simulation forward at a rate of 60hz
-        checkBalls();
-        world.step(1f/60f, 6, 2);
-
-        //logic for setting up ball draw coordinates
-        for(int i = 0; i < ballList.size(); i++) {
-            Sprite currSprite = ballList.get(i).ballSprite;
-            Body currBody = ballList.get(i).ballBody;
-            currSprite.setPosition((currBody.getPosition().x * PIXELS_TO_METERS) - currSprite.getWidth()/2 , (currBody.getPosition().y * PIXELS_TO_METERS) -currSprite.getHeight()/2 );
-            currSprite.setRotation((float)Math.toDegrees(currBody.getAngle()));
-        }
-
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        sb.setProjectionMatrix(camera.combined);
-        debugMatrix = sb.getProjectionMatrix().cpy().scale(PIXELS_TO_METERS, PIXELS_TO_METERS, 0);
-
-
-        sb.begin();
-        sb.draw(playstateHUD, -540, -960);
-        //logic for actually drawing the balls.
-        for(int i = 0; i < ballList.size(); i++) {
-            Sprite sprite = ballList.get(i).ballSprite;
-            //Gdx.app.log("debug", sprite.getX() + " " + sprite.getY());
-            sb.draw(sprite, sprite.getX(), sprite.getY(), sprite.getOriginX(),
-                    sprite.getOriginY(),
-                    sprite.getWidth(), sprite.getHeight(), sprite.getScaleX(), sprite.
-                            getScaleY(), sprite.getRotation());
-        }
-
-        //drawing bars
-        sb.draw(bar.barSprite, bar.barSprite.getX(),bar.barSprite.getY());
-        sb.draw(bar2.barSprite, bar2.barSprite.getX(),bar2.barSprite.getY());
-        sb.draw(bar3.barSprite, bar3.barSprite.getX(), bar3.barSprite.getY());
-
-        sb.end();
-        debugRenderer.render(world, debugMatrix);
-    }
 
     @Override
     public boolean keyDown(int keycode) {
@@ -278,7 +152,6 @@ public class PlayState extends State implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        //spawnBalls();
         return false;
     }
 
@@ -326,5 +199,167 @@ public class PlayState extends State implements InputProcessor {
     @Override
     public boolean scrolled(int amount) {
         return false;
+    }
+
+    public void initWorld() {
+        //Create world, give it gravity.
+        world = new World(new Vector2(0, GRAVITY), true);
+        float w = Gdx.graphics.getWidth()/PIXELS_TO_METERS;
+        float h = Gdx.graphics.getHeight()/PIXELS_TO_METERS - 20/PIXELS_TO_METERS;
+        //Now create the boundaries. Pass it the vertexes.
+        //top edge
+        createEdge(-w/2,h/2,w/2,h/2);
+        //left edge.
+        createEdge(-w/2, 960/PIXELS_TO_METERS, -w/2, 430/PIXELS_TO_METERS);
+        createEdge(-w/2, 375/PIXELS_TO_METERS, -w/2, 40/PIXELS_TO_METERS);
+
+        //Now create the REST of it.
+        createEdge(-w/2 + 1, -20/PIXELS_TO_METERS ,-w/2 + 1, -7*h);
+
+        //right edge
+        createEdge(w/2,-7*h,w/2,h/2);
+
+        //Now create the bars
+        //pass in world and the y coordinates of the bar. The x is not passed since it should all be centered already.
+        bar = new BarBox2D(world, 0, 10);
+
+        bar2 = new BarBox2D(world, 400, 0);
+
+        bar3 = new BarBox2D(world, -400, 0);
+
+    }
+
+    public void createEdge (float vx1, float vy1, float vx2, float vy2){
+        BodyDef edgeInitial = new BodyDef();
+        //StaticBody because our edges will not move.
+        edgeInitial.type = BodyDef.BodyType.StaticBody;
+        edgeInitial.position.set(0,0);
+
+        EdgeShape edgeShape = new EdgeShape();
+        edgeShape.set(vx1, vy1, vx2, vy2);
+        FixtureDef leftEdgeFix = new FixtureDef();
+        leftEdgeFix.shape = edgeShape;
+
+        Body edgeFinal = world.createBody(edgeInitial);
+        edgeFinal.createFixture(leftEdgeFix);
+
+        edgeShape.dispose();
+    }
+
+    public void spawnBalls() {
+        for(int i = 0; i < 5; i++) {
+            ballList.add(new Ball(world));
+        }
+    }
+
+    @Override
+    protected void handleInput() {
+
+    }
+
+    //this checks for balls on our destroy list and destroys them as necessary.
+    public void checkBalls() {
+
+        for(int i = 0; i < ballList.size(); i++) {
+
+            //If the balls reach the end zone, we want to remove them and add to our score.
+            if(ballList.get(i).ballBody.getPosition().y > 8) {
+                ballList.get(i).destroyBoolAtomic.set(true);
+                score++;
+            }
+
+            if (ballList.get(i).destroyBoolAtomic.get() == true) {
+                destroyBallList.add(ballList.get(i));
+                Gdx.app.log("debug", "added to destroy list.");
+            }
+        }
+
+        //remove balls from our list.
+        if(!world.isLocked()) {
+            for (int i = 0; i < destroyBallList.size(); i++) {
+                world.destroyBody(destroyBallList.get(i).ballBody);
+                ballList.remove(destroyBallList.get(i));
+                Gdx.app.log("debug", "destroying");
+            }
+        }
+
+        //re-init destroy ball list.
+        destroyBallList =  new ArrayList<Ball>();
+    }
+
+    //if the ball touches the bar more than 10 times, it will be added to destroy list.
+    public void checkBounceCount() {
+        for(int i = 0; i < ballList.size(); i++) {
+            Gdx.app.log("debug", "BallCount ... " + ballList.get(i).bounceCounter);
+            if(ballList.get(i).bounceCounter > 10) {
+                //we want to subtract from the life count upon a ball explosion.
+                liveCount--;
+                destroyBallList.add(ballList.get(i));
+            }
+        }
+    }
+
+    public void checkLiveCount() {
+        if(liveCount == 0) {
+            gsm.set(new MenuState(gsm));
+        }
+    }
+
+    @Override
+    protected void update(float dt) {
+
+    }
+
+    @Override
+    protected void render(SpriteBatch sb) {
+        camera.update();
+
+        // Step the physics simulation forward at a rate of 60hz
+        checkBounceCount();
+        checkLiveCount();
+        checkBalls();
+        world.step(1f/60f, 6, 2);
+
+        //logic for setting up ball draw coordinates
+        for(int i = 0; i < ballList.size(); i++) {
+            Sprite currSprite = ballList.get(i).ballSprite;
+            Body currBody = ballList.get(i).ballBody;
+            currSprite.setPosition((currBody.getPosition().x * PIXELS_TO_METERS) - currSprite.getWidth()/2 , (currBody.getPosition().y * PIXELS_TO_METERS) -currSprite.getHeight()/2 );
+            currSprite.setRotation((float)Math.toDegrees(currBody.getAngle()));
+        }
+
+        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        sb.setProjectionMatrix(camera.combined);
+        debugMatrix = sb.getProjectionMatrix().cpy().scale(PIXELS_TO_METERS, PIXELS_TO_METERS, 0);
+
+
+        sb.begin();
+        sb.draw(playstateHUD, -540, -960);
+        //logic for actually drawing the balls.
+        for(int i = 0; i < ballList.size(); i++) {
+            Sprite sprite = ballList.get(i).ballSprite;
+            //Gdx.app.log("debug", sprite.getX() + " " + sprite.getY());
+            sb.draw(sprite, sprite.getX(), sprite.getY(), sprite.getOriginX(),
+                    sprite.getOriginY(),
+                    sprite.getWidth(), sprite.getHeight(), sprite.getScaleX(), sprite.
+                            getScaleY(), sprite.getRotation());
+        }
+
+        //drawing bars
+        sb.draw(bar.barSprite, bar.barSprite.getX(),bar.barSprite.getY());
+        sb.draw(bar2.barSprite, bar2.barSprite.getX(),bar2.barSprite.getY());
+        sb.draw(bar3.barSprite, bar3.barSprite.getX(), bar3.barSprite.getY());
+
+        //draw live count
+        for(int i = 0; i < liveCount; i++) {
+            sb.draw(livesTexture, 225 + i*100 , 800);
+        }
+        font.setColor(Color.BLACK);
+        font.draw(sb, Integer.toString(score), -475, 875);
+
+        sb.end();
+        debugRenderer.render(world, debugMatrix);
     }
 }
