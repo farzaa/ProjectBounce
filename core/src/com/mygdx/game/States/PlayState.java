@@ -101,7 +101,7 @@ public class PlayState extends State implements InputProcessor {
                         if(ballList.get(i).ballBody.equals(bodyB)) {
                             ballList.get(i).bounceCounter++;
                             //Keep on adding force to the ball as long as it touches a bar so things stay moving.
-                            ballList.get(i).ballBody.applyForceToCenter(new Vector2(0, 5), true);
+                            ballList.get(i).ballBody.applyForceToCenter(new Vector2(0, 7), true);
                         }
                     }
                 }
@@ -113,7 +113,7 @@ public class PlayState extends State implements InputProcessor {
                     for (int i = 0; i < ballList.size(); i++) {
                         if(ballList.get(i).ballBody.equals(bodyA)) {
                             ballList.get(i).bounceCounter++;
-                            ballList.get(i).ballBody.applyForceToCenter(new Vector2(0, 5), true);
+                            ballList.get(i).ballBody.applyForceToCenter(new Vector2(0, 7), true);
                         }
                     }
                 }

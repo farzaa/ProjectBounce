@@ -1,6 +1,8 @@
 package com.mygdx.game.States;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -18,6 +20,7 @@ public class MenuState extends State {
     private Stage menuStage;
     private MenuBackground menuBackground;
     private MenuPlayButton menuPlayButton;
+    Music menuMusic;
 
     public MenuState(final GameStateManager gsm) {
         super(gsm);
@@ -26,15 +29,10 @@ public class MenuState extends State {
         menuBackground = new MenuBackground();
         menuStage.addActor(menuBackground);
         menuStage.addActor(menuPlayButton);
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("menu-state-audio.mp3"));
+        menuMusic.play();
+        menuMusic.setVolume(0.3f);
         Gdx.input.setInputProcessor(menuStage);
-
-//        menuPlayButton.addListener(new InputListener(){
-//            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//                Gdx.app.log("debug", "touched play button!");
-//                gsm.set(new PlayState(gsm));
-//                return true;
-//            }
-//        });
     }
 
     @Override
@@ -63,6 +61,8 @@ public class MenuState extends State {
     //do not want any nasty memory leaks.
     public void dispose() {
         Gdx.app.log("debug", "Disposing menu state assets...");
+        menuMusic.stop();
+        menuMusic.dispose();
         menuBackground.background.dispose();
         menuBackground.menuBar.dispose();
         menuBackground.title.dispose();
