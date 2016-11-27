@@ -70,31 +70,35 @@ public class PlayState extends State implements InputProcessor {
         destroyBallList = new ArrayList<Ball>();
         spawnBalls();
 
-        //set up contact litsener for the balls/bars. this way we can do things like check for ball/bar collisions.
-        //TO DO: set up bars so they give the balls and extra bump of force to keep things spicy.
+        //this contains all the logic for contact within the game.
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
                 Body bodyA = contact.getFixtureA().getBody();
                 Body bodyB = contact.getFixtureB().getBody();
 
+                //if a ball touches a bar
                 if((contact.getFixtureA().getShape().getType() == Shape.Type.Polygon)) {
                     Gdx.app.log("debug", "touched bar");
 
                     for (int i = 0; i < ballList.size(); i++) {
+                        //We want to find the ball that touched the bar.
                         if(ballList.get(i).ballBody.equals(bodyB)) {
                             ballList.get(i).bounceCounter++;
-                            ballList.get(i).ballBody.applyAngularImpulse();
+                            //Keep on adding force to the ball as long as it touches a bar so things stay moving. 
+                            ballList.get(i).ballBody.applyForceToCenter(new Vector2(0, 5), true);
                         }
                     }
                 }
 
+                //if a ball touches a bar but if the roles are switched, we do the exact same thing as above.
                 else if((contact.getFixtureB().getShape().getType() == Shape.Type.Polygon)) {
                     Gdx.app.log("debug", "touched bar");
 
                     for (int i = 0; i < ballList.size(); i++) {
                         if(ballList.get(i).ballBody.equals(bodyA)) {
                             ballList.get(i).bounceCounter++;
+                            ballList.get(i).ballBody.applyForceToCenter(new Vector2(0, 5), true);
                         }
                     }
                 }
