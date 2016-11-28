@@ -2,6 +2,7 @@ package com.mygdx.game.States;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -54,12 +55,23 @@ public class PlayState extends State implements InputProcessor {
     ArrayList<Ball> ballList;
     ArrayList<Ball> destroyBallList;
 
+    ArrayList<Texture> ballFrames;
+
     BarBox2D bar;
     BarBox2D bar2;
     BarBox2D bar3;
 
     int liveCount;
     int score;
+
+    Music gameMusic;
+    Music bounceSound;
+    Music explosionSound;
+    Music touchdownSound;
+
+
+    //we want to increase the number of balls that come down every wave, this keeps track of that number;
+    int ballCount = 5;
 
 
 
@@ -84,6 +96,28 @@ public class PlayState extends State implements InputProcessor {
         spawnBalls();
 
         liveCount = 3;
+        ballFrames = new ArrayList<Texture>();
+
+        for(int i = 0; i <= 10; i++){
+            ballFrames.add(new Texture("ballFrames/circle-image-" + i + ".png"));
+        }
+
+        //set/init up all the sounds here
+        gameMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/play-state-audio.mp3"));
+        gameMusic.play();
+        gameMusic.setVolume(0.3f);
+        gameMusic.setLooping(true);
+
+        //i load all the sounds here since we'll be reusing them a lot.
+        bounceSound = Gdx.audio.newMusic(Gdx.files.internal("audio/bump.wav"));
+        bounceSound.setVolume(0.5f);
+
+        explosionSound = Gdx.audio.newMusic(Gdx.files.internal("audio/explosion.wav"));
+        explosionSound.setVolume(0.5f);
+
+        touchdownSound = Gdx.audio.newMusic(Gdx.files.internal("audio/endzone.wav"));
+        touchdownSound.setVolume(0.5f);
+
 
         //this contains all the logic for contact within the game.
         world.setContactListener(new ContactListener() {
@@ -95,6 +129,7 @@ public class PlayState extends State implements InputProcessor {
                 //if a ball touches a bar
                 if((contact.getFixtureA().getShape().getType() == Shape.Type.Polygon)) {
                     Gdx.app.log("debug", "touched bar");
+                    bounceSound.play();
 
                     for (int i = 0; i < ballList.size(); i++) {
                         //We want to find the ball that touched the bar.
@@ -109,6 +144,7 @@ public class PlayState extends State implements InputProcessor {
                 //if a ball touches a bar but if the roles are switched, we do the exact same thing as above.
                 else if((contact.getFixtureB().getShape().getType() == Shape.Type.Polygon)) {
                     Gdx.app.log("debug", "touched bar");
+                    bounceSound.play();
 
                     for (int i = 0; i < ballList.size(); i++) {
                         if(ballList.get(i).ballBody.equals(bodyA)) {
@@ -214,7 +250,7 @@ public class PlayState extends State implements InputProcessor {
         createEdge(-w/2, 375/PIXELS_TO_METERS, -w/2, 40/PIXELS_TO_METERS);
 
         //Now create the REST of it.
-        createEdge(-w/2 + 1, -20/PIXELS_TO_METERS ,-w/2 + 1, -7*h);
+        createEdge(-w/2, -20/PIXELS_TO_METERS ,-w/2, -7*h);
 
         //right edge
         createEdge(w/2,-7*h,w/2,h/2);
@@ -247,7 +283,7 @@ public class PlayState extends State implements InputProcessor {
     }
 
     public void spawnBalls() {
-        for(int i = 0; i < 5; i++) {
+        for(int i = 0; i < ballCount; i++) {
             ballList.add(new Ball(world));
         }
     }
@@ -265,6 +301,7 @@ public class PlayState extends State implements InputProcessor {
             //If the balls reach the end zone, we want to remove them and add to our score.
             if(ballList.get(i).ballBody.getPosition().y > 8) {
                 ballList.get(i).destroyBoolAtomic.set(true);
+                touchdownSound.play();
                 score++;
             }
 
@@ -293,6 +330,8 @@ public class PlayState extends State implements InputProcessor {
             Gdx.app.log("debug", "BallCount ... " + ballList.get(i).bounceCounter);
             if(ballList.get(i).bounceCounter > 10) {
                 //we want to subtract from the life count upon a ball explosion.
+
+                explosionSound.play();
                 liveCount--;
                 destroyBallList.add(ballList.get(i));
             }
@@ -301,7 +340,27 @@ public class PlayState extends State implements InputProcessor {
 
     public void checkLiveCount() {
         if(liveCount == 0) {
+            dispose();
             gsm.set(new MenuState(gsm));
+        }
+    }
+
+    public void changeBallSprites(){
+        for(int i = 0; i < ballList.size(); i++) {
+            int frame = ballList.get(i).bounceCounter;
+
+            //TO DO: SUPER IMPORTANT: How do I dispose the old textures when setting the new ones? AH.
+            ballList.get(i).ballSprite.setTexture(ballFrames.get(frame));
+
+
+
+        }
+    }
+
+    public void checkBallCount() {
+        if(ballList.isEmpty()) {
+            ballCount = ballCount + 3;
+            spawnBalls();
         }
     }
 
@@ -318,6 +377,8 @@ public class PlayState extends State implements InputProcessor {
         checkBounceCount();
         checkLiveCount();
         checkBalls();
+        changeBallSprites();
+        checkBallCount();
         world.step(1f/60f, 6, 2);
 
         //logic for setting up ball draw coordinates
@@ -361,5 +422,9 @@ public class PlayState extends State implements InputProcessor {
 
         sb.end();
         debugRenderer.render(world, debugMatrix);
+    }
+
+    public void dispose() {
+        gameMusic.dispose();
     }
 }

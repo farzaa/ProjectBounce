@@ -29,7 +29,7 @@ public class MenuState extends State {
         menuBackground = new MenuBackground();
         menuStage.addActor(menuBackground);
         menuStage.addActor(menuPlayButton);
-        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("menu-state-audio.mp3"));
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/menu-state-audio.mp3"));
         menuMusic.play();
         menuMusic.setVolume(0.3f);
         Gdx.input.setInputProcessor(menuStage);
