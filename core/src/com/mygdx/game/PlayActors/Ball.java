@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.mygdx.game.GameDemo;
 import com.mygdx.game.States.PlayState;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,6 +47,9 @@ public class Ball {
 
     Random random;
 
+    //This is probably super AIDS, but I'm low on time.
+    public Texture powerUpText;
+
     public Ball(final World world) {
         this.world = world;
         random = new Random();
@@ -53,7 +57,8 @@ public class Ball {
 
         ballSprite = new Sprite(new Texture("circle-image.png"));
 
-        ballSprite.setScale(0.2f, 0.2f);
+        ballSprite.setScale(0.23f, 0.23f);
+
 
         //TO DO: We want to randomize the position AND initial X velocity of the balls when they spawn.
 
@@ -77,6 +82,12 @@ public class Ball {
 
         ballBody.createFixture(fixtureDef);
         shape.dispose();
+
+        //power-up logic
+        powerUpText = new Texture("powerups/slow-texture.png");
+
+
+
 
     }
 

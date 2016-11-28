@@ -11,9 +11,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -22,7 +20,6 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.Shape;
@@ -51,6 +48,7 @@ public class PlayState extends State implements InputProcessor {
 
     Texture playstateHUD;
     Texture livesTexture;
+    Texture slowPowerBW;
 
     ArrayList<Ball> ballList;
     ArrayList<Ball> destroyBallList;
@@ -68,10 +66,13 @@ public class PlayState extends State implements InputProcessor {
     Music bounceSound;
     Music explosionSound;
     Music touchdownSound;
+    Music nextWave;
 
 
     //we want to increase the number of balls that come down every wave, this keeps track of that number;
     int ballCount = 5;
+
+    ArrayList<Object> powerUpList;
 
 
 
@@ -82,6 +83,8 @@ public class PlayState extends State implements InputProcessor {
         //Box2D.init();
         playstateHUD = new Texture("playstate-hud.png");
         livesTexture = new Texture("heart-image.png");
+        slowPowerBW = new Texture("powerups/slow-texture-bw.png");
+
         font = new BitmapFont();
         font.getData().setScale(5, 5);
         //First actually create World and add basic boundaries.
@@ -93,7 +96,6 @@ public class PlayState extends State implements InputProcessor {
         camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         ballList = new ArrayList<Ball>();
         destroyBallList = new ArrayList<Ball>();
-        spawnBalls();
 
         liveCount = 3;
         ballFrames = new ArrayList<Texture>();
@@ -118,6 +120,12 @@ public class PlayState extends State implements InputProcessor {
         touchdownSound = Gdx.audio.newMusic(Gdx.files.internal("audio/endzone.wav"));
         touchdownSound.setVolume(0.5f);
 
+        nextWave = Gdx.audio.newMusic(Gdx.files.internal("audio/nextwave.wav"));
+        nextWave.setVolume(1f);
+
+        spawnBalls();
+
+        powerUpList = new ArrayList<Object>();
 
         //this contains all the logic for contact within the game.
         world.setContactListener(new ContactListener() {
@@ -284,6 +292,7 @@ public class PlayState extends State implements InputProcessor {
 
     public void spawnBalls() {
         for(int i = 0; i < ballCount; i++) {
+            nextWave.play();
             ballList.add(new Ball(world));
         }
     }
@@ -383,8 +392,10 @@ public class PlayState extends State implements InputProcessor {
 
         //logic for setting up ball draw coordinates
         for(int i = 0; i < ballList.size(); i++) {
+
             Sprite currSprite = ballList.get(i).ballSprite;
             Body currBody = ballList.get(i).ballBody;
+
             currSprite.setPosition((currBody.getPosition().x * PIXELS_TO_METERS) - currSprite.getWidth()/2 , (currBody.getPosition().y * PIXELS_TO_METERS) -currSprite.getHeight()/2 );
             currSprite.setRotation((float)Math.toDegrees(currBody.getAngle()));
         }
@@ -402,10 +413,7 @@ public class PlayState extends State implements InputProcessor {
         for(int i = 0; i < ballList.size(); i++) {
             Sprite sprite = ballList.get(i).ballSprite;
             //Gdx.app.log("debug", sprite.getX() + " " + sprite.getY());
-            sb.draw(sprite, sprite.getX(), sprite.getY(), sprite.getOriginX(),
-                    sprite.getOriginY(),
-                    sprite.getWidth(), sprite.getHeight(), sprite.getScaleX(), sprite.
-                            getScaleY(), sprite.getRotation());
+            sb.draw(sprite, sprite.getX(), sprite.getY(), sprite.getOriginX(), sprite.getOriginY(), sprite.getWidth(), sprite.getHeight(), sprite.getScaleX(), sprite.getScaleY(), sprite.getRotation());
         }
 
         //drawing bars
@@ -413,12 +421,18 @@ public class PlayState extends State implements InputProcessor {
         sb.draw(bar2.barSprite, bar2.barSprite.getX(),bar2.barSprite.getY());
         sb.draw(bar3.barSprite, bar3.barSprite.getX(), bar3.barSprite.getY());
 
+
         //draw live count
         for(int i = 0; i < liveCount; i++) {
             sb.draw(livesTexture, 225 + i*100 , 800);
         }
+
+        //draw score
         font.setColor(Color.BLACK);
         font.draw(sb, Integer.toString(score), -475, 875);
+
+        //draw powerups
+        sb.draw(slowPowerBW, -500, -940, 150, 150);
 
         sb.end();
         debugRenderer.render(world, debugMatrix);
