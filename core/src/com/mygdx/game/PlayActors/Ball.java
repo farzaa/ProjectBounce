@@ -45,10 +45,12 @@ public class Ball {
 
     public int bounceCounter;
 
+    public String powerUpType;
+
     Random random;
 
     //This is probably super AIDS, but I'm low on time.
-    public Texture powerUpText;
+    public Sprite powerUpText;
 
     public Ball(final World world) {
         this.world = world;
@@ -84,7 +86,29 @@ public class Ball {
         shape.dispose();
 
         //power-up logic
-        powerUpText = new Texture("powerups/slow-texture.png");
+
+        float chance = random.nextFloat();
+
+        //10% chance of a heart power up
+        if (chance <= 0.10f) {
+            powerUpText = new Sprite(new Texture("powerups/heart-image.png"));
+            powerUpText.setScale(0.5f,0.5f);
+            powerUpType = "heart";
+        }
+
+        if(chance <= 0.20f) {
+            powerUpText = new Sprite(new Texture("powerups/cherrybomb.png"));
+            powerUpText.setScale(0.5f,0.5f);
+            powerUpType = "bomb";
+        }
+
+        else {
+            powerUpText = null;
+            powerUpType = "none";
+        }
+
+
+
 
 
 

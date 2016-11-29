@@ -48,7 +48,7 @@ public class PlayState extends State implements InputProcessor {
 
     Texture playstateHUD;
     Texture livesTexture;
-    Texture slowPowerBW;
+    Texture bombPower;
 
     ArrayList<Ball> ballList;
     ArrayList<Ball> destroyBallList;
@@ -83,7 +83,9 @@ public class PlayState extends State implements InputProcessor {
         //Box2D.init();
         playstateHUD = new Texture("playstate-hud.png");
         livesTexture = new Texture("heart-image.png");
-        slowPowerBW = new Texture("powerups/slow-texture-bw.png");
+
+        //init power ups to black and white.
+        bombPower = new Texture("powerups/cherrybomb-bw.png");
 
         font = new BitmapFont();
         font.getData().setScale(5, 5);
@@ -312,6 +314,15 @@ public class PlayState extends State implements InputProcessor {
                 ballList.get(i).destroyBoolAtomic.set(true);
                 touchdownSound.play();
                 score++;
+
+                //power up logic
+                if(ballList.get(i).powerUpText != null) {
+
+                    //heart is pretty simple, since it doesn't have any button control.
+                    if(ballList.get(i).powerUpType.equals("heart")) {
+                        liveCount++;
+                    }
+                }
             }
 
             if (ballList.get(i).destroyBoolAtomic.get() == true) {
@@ -339,7 +350,6 @@ public class PlayState extends State implements InputProcessor {
             Gdx.app.log("debug", "BallCount ... " + ballList.get(i).bounceCounter);
             if(ballList.get(i).bounceCounter > 10) {
                 //we want to subtract from the life count upon a ball explosion.
-
                 explosionSound.play();
                 liveCount--;
                 destroyBallList.add(ballList.get(i));
@@ -382,12 +392,13 @@ public class PlayState extends State implements InputProcessor {
     protected void render(SpriteBatch sb) {
         camera.update();
 
-        // Step the physics simulation forward at a rate of 60hz
         checkBounceCount();
         checkLiveCount();
         checkBalls();
         changeBallSprites();
         checkBallCount();
+
+        // Step the physics simulation forward at a rate of 60hz
         world.step(1f/60f, 6, 2);
 
         //logic for setting up ball draw coordinates
@@ -398,6 +409,11 @@ public class PlayState extends State implements InputProcessor {
 
             currSprite.setPosition((currBody.getPosition().x * PIXELS_TO_METERS) - currSprite.getWidth()/2 , (currBody.getPosition().y * PIXELS_TO_METERS) -currSprite.getHeight()/2 );
             currSprite.setRotation((float)Math.toDegrees(currBody.getAngle()));
+
+            if(ballList.get(i).powerUpText != null) {
+                ballList.get(i).powerUpText.setPosition(currSprite.getX() + currSprite.getWidth() / 2 - 50, currSprite.getY() + currSprite.getHeight() / 2 - 50);
+                ballList.get(i).powerUpText.setRotation((float)Math.toDegrees(currBody.getAngle()));
+            }
         }
 
         Gdx.gl.glClearColor(1, 1, 1, 1);
@@ -412,8 +428,12 @@ public class PlayState extends State implements InputProcessor {
         //logic for actually drawing the balls.
         for(int i = 0; i < ballList.size(); i++) {
             Sprite sprite = ballList.get(i).ballSprite;
+            Sprite powerSprite =  ballList.get(i).powerUpText;
             //Gdx.app.log("debug", sprite.getX() + " " + sprite.getY());
             sb.draw(sprite, sprite.getX(), sprite.getY(), sprite.getOriginX(), sprite.getOriginY(), sprite.getWidth(), sprite.getHeight(), sprite.getScaleX(), sprite.getScaleY(), sprite.getRotation());
+            if(ballList.get(i).powerUpText != null) {
+                sb.draw(powerSprite, powerSprite.getX(), powerSprite.getY(), powerSprite.getOriginX(), powerSprite.getOriginY(), powerSprite.getWidth(), powerSprite.getHeight(), powerSprite.getScaleX(), powerSprite.getScaleY(), powerSprite.getRotation());
+            }
         }
 
         //drawing bars
@@ -432,7 +452,7 @@ public class PlayState extends State implements InputProcessor {
         font.draw(sb, Integer.toString(score), -475, 875);
 
         //draw powerups
-        sb.draw(slowPowerBW, -500, -940, 150, 150);
+        sb.draw(bombPower, -500, -940, 150, 150);
 
         sb.end();
         debugRenderer.render(world, debugMatrix);
