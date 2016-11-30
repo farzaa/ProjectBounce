@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Google Play game services IDs.
+Save this file as res/values/games-ids.xml in your project.
+-->
+<resources>
+    <string name="app_id">18503418408</string>
+    <string name="package_name">com.mygdx.game</string>
+    <string name="achievement_n_o_o_b">CggIqISP90QQAhAB</string>
+    <string name="achievement_semi_noob">CggIqISP90QQAhAC</string>
+    <string name="achievement_admirable">CggIqISP90QQAhAD</string>
+    <string name="achievement_semipro">CggIqISP90QQAhAE</string>
+    <string name="achievement_pro">CggIqISP90QQAhAF</string>
+    <string name="leaderboard_highscores">CggIqISP90QQAhAG</string>
+</resources>

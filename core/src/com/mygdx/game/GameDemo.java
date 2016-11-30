@@ -14,14 +14,20 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.States.GameStateManager;
 import com.mygdx.game.States.MenuState;
+import com.mygdx.game.States.PlayServices;
+
 
 public class GameDemo extends ApplicationAdapter {
 
+	public static PlayServices playServices;
 	public static int WIDTH;
 	public static int HEIGHT;
 	private SpriteBatch batch;
 	private GameStateManager gsm;
 
+	public GameDemo(PlayServices playServices) {
+		this.playServices = playServices;
+	}
 
 	@Override
 	public void create () {
@@ -33,7 +39,7 @@ public class GameDemo extends ApplicationAdapter {
 			Gdx.app.log("debug", "Android Device recognized. Width/Height... " + WIDTH + " / " + HEIGHT);
 			batch = new SpriteBatch();
 			gsm = new GameStateManager();
-			gsm.push(new MenuState(gsm));
+			gsm.push(new MenuState(playServices, gsm));
 		}
 
 		else {

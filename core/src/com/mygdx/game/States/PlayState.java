@@ -74,11 +74,17 @@ public class PlayState extends State implements InputProcessor {
 
     ArrayList<Object> powerUpList;
 
+    public PlayServices playservices;
 
 
-    public PlayState(GameStateManager gsm) {
+
+    public PlayState(PlayServices playservices, GameStateManager gsm) {
         super(gsm);
         this.gsm = gsm;
+        this.playservices = playservices;
+
+        //playservices.unlockAchievement();
+
         //Many tutorials say to this step, but things seems to be working fine without it.
         //Box2D.init();
         playstateHUD = new Texture("playstate-hud.png");
@@ -320,7 +326,12 @@ public class PlayState extends State implements InputProcessor {
 
                     //heart is pretty simple, since it doesn't have any button control.
                     if(ballList.get(i).powerUpType.equals("heart")) {
-                        liveCount++;
+                        if(liveCount < 3)
+                            liveCount++;
+                    }
+
+                    if(ballList.get(i).powerUpType.equals("bomb")) {
+                        bombPower = new Texture("powerups/cherrybomb.png");
                     }
                 }
             }
@@ -360,7 +371,7 @@ public class PlayState extends State implements InputProcessor {
     public void checkLiveCount() {
         if(liveCount == 0) {
             dispose();
-            gsm.set(new MenuState(gsm));
+            gsm.set(new MenuState(playservices, gsm));
         }
     }
 

@@ -3,11 +3,15 @@ package com.mygdx.game.States;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.game.GameDemo;
 import com.mygdx.game.MenuActors.MenuBackground;
 import com.mygdx.game.MenuActors.MenuPlayButton;
 
@@ -17,15 +21,43 @@ import com.mygdx.game.MenuActors.MenuPlayButton;
 
 public class MenuState extends State {
 
+
+    public Texture title;
+    public Texture menuBar;
+
+    private Vector3 position;
+    private Vector3 velocity;
+    private static final int GRAVITY = -5;
+
+    private Rectangle titleRectangle;
+    private Rectangle menuBarRectangle;
+
+
     private Stage menuStage;
     private MenuBackground menuBackground;
     private MenuPlayButton menuPlayButton;
     Music menuMusic;
 
-    public MenuState(final GameStateManager gsm) {
+    PlayServices playServices;
+
+    public MenuState(PlayServices playServices, final GameStateManager gsm) {
         super(gsm);
+
+        this.playServices = playServices;
+        //playServices.signIn();
+
+        title = new Texture("menu-title.png");
+        menuBar = new Texture("menu-black-bar.png");
+
+        position = new Vector3(0, GameDemo.HEIGHT - 200, 0);
+        velocity = new Vector3(0, GRAVITY, 0);
+
+        //Initialize title rectangle
+        titleRectangle = new Rectangle(0, GameDemo.HEIGHT - 50, title.getWidth(), title.getHeight());
+        menuBarRectangle = new Rectangle(0, (GameDemo.HEIGHT - 355), GameDemo.WIDTH, menuBar.getHeight());
+
         menuStage = new Stage(new ScreenViewport());
-        menuPlayButton = new MenuPlayButton(gsm, this);
+        menuPlayButton = new MenuPlayButton(playServices, gsm, this);
         menuBackground = new MenuBackground();
         menuStage.addActor(menuBackground);
         menuStage.addActor(menuPlayButton);
@@ -49,13 +81,24 @@ public class MenuState extends State {
     @Override
     protected void update(float dt) {
         handleInput();
-        menuBackground.update(dt);
     }
 
     @Override
     protected void render(SpriteBatch sb) {
+
         menuStage.draw();
         menuStage.act(Gdx.graphics.getDeltaTime());
+
+
+        if(playServices.isSignedIn() ==  true) {
+            menuBackground.update(Gdx.graphics.getDeltaTime());
+            sb.draw(title, 0, position.y);
+            //I chose to to hard code to draw it at -350. This can be changed later to some fractional value.
+            sb.draw(menuBar, 0, (GameDemo.HEIGHT - 355), GameDemo.WIDTH, menuBar.getHeight());
+        }
+
+
+
     }
 
     //do not want any nasty memory leaks.

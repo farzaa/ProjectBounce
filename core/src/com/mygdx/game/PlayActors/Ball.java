@@ -87,25 +87,44 @@ public class Ball {
 
         //power-up logic
 
-        float chance = random.nextFloat();
+        float chance = random.nextFloat() * 100;
 
-        //10% chance of a heart power up
-        if (chance <= 0.10f) {
+        if(chance < 75) { //0 - 50 percent chance
+            powerUpText = null;
+            powerUpType = "none";
+        }
+
+        else if(chance < 85) { //75 - 85
             powerUpText = new Sprite(new Texture("powerups/heart-image.png"));
             powerUpText.setScale(0.5f,0.5f);
             powerUpType = "heart";
         }
 
-        if(chance <= 0.20f) {
+        else { //85 - 90
             powerUpText = new Sprite(new Texture("powerups/cherrybomb.png"));
             powerUpText.setScale(0.5f,0.5f);
             powerUpType = "bomb";
         }
 
-        else {
-            powerUpText = null;
-            powerUpType = "none";
-        }
+
+//        //10% chance of a heart power up
+//        if (chance <= 0.10f) {
+//            powerUpText = new Sprite(new Texture("powerups/heart-image.png"));
+//            powerUpText.setScale(0.5f,0.5f);
+//            powerUpType = "heart";
+//        }
+
+//        TO DO
+//        if(chance <= 0.20f) {
+//            powerUpText = new Sprite(new Texture("powerups/cherrybomb.png"));
+//            powerUpText.setScale(0.5f,0.5f);
+//            powerUpType = "bomb";
+//        }
+//
+//        else {
+//            powerUpText = null;
+//            powerUpType = "none";
+//        }
 
 
 

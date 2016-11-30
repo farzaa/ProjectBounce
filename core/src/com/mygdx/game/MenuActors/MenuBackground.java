@@ -65,8 +65,8 @@ public class MenuBackground extends Actor {
     @Override
     public void draw (Batch sb, float parentAlpha) {
         sb.draw(background,0, 0, GameDemo.WIDTH, GameDemo.HEIGHT);
-        sb.draw(title, 0, position.y);
-        //I chose to to hard code to draw it at -350. This can be changed later to some fractional value.
-        sb.draw(menuBar, 0, (GameDemo.HEIGHT - 355), GameDemo.WIDTH, menuBar.getHeight());
+//        sb.draw(title, 0, position.y);
+//        //I chose to to hard code to draw it at -350. This can be changed later to some fractional value.
+//        sb.draw(menuBar, 0, (GameDemo.HEIGHT - 355), GameDemo.WIDTH, menuBar.getHeight());
     }
 }
