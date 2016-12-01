@@ -5,7 +5,7 @@ Save this file as res/values/games-ids.xml in your project.
 -->
 <resources>
     <string name="app_id">18503418408</string>
-    <string name="package_name">com.mygdx.game</string>
+    <string name="package_name">com.mygdx.gameBounceBounce</string>
     <string name="achievement_n_o_o_b">CggIqISP90QQAhAB</string>
     <string name="achievement_semi_noob">CggIqISP90QQAhAC</string>
     <string name="achievement_admirable">CggIqISP90QQAhAD</string>
