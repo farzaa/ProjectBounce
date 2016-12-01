@@ -1,8 +1,7 @@
-package com.mygdx.game.States;
+package com.mygdx.gameBounceBounce.States;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -11,9 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.GameDemo;
-import com.mygdx.game.MenuActors.MenuBackground;
-import com.mygdx.game.MenuActors.MenuPlayButton;
+import com.mygdx.gameBounceBounce.GameDemo;
+import com.mygdx.gameBounceBounce.MenuActors.MenuBackground;
+import com.mygdx.gameBounceBounce.MenuActors.MenuPlayButton;
 
 /**
  * Created by flynn on 11/16/16.
@@ -38,12 +37,13 @@ public class MenuState extends State {
     private MenuPlayButton menuPlayButton;
     Music menuMusic;
 
-    PlayServices playServices;
+    com.mygdx.gameBounceBounce.States.PlayServices playServices;
 
-    public MenuState(PlayServices playServices, final GameStateManager gsm) {
+    public MenuState(com.mygdx.gameBounceBounce.States.PlayServices playServices, final com.mygdx.gameBounceBounce.States.GameStateManager gsm) {
         super(gsm);
 
         this.playServices = playServices;
+        playServices.signIn();
         //playServices.signIn();
 
         title = new Texture("menu-title.png");
@@ -90,14 +90,12 @@ public class MenuState extends State {
         menuStage.act(Gdx.graphics.getDeltaTime());
 
 
-        if(playServices.isSignedIn() ==  true) {
-            menuBackground.update(Gdx.graphics.getDeltaTime());
-            sb.draw(title, 0, position.y);
-            //I chose to to hard code to draw it at -350. This can be changed later to some fractional value.
-            sb.draw(menuBar, 0, (GameDemo.HEIGHT - 355), GameDemo.WIDTH, menuBar.getHeight());
-        }
-
-
+//        if(playServices.isSignedIn() ==  true) {
+//            menuBackground.update(Gdx.graphics.getDeltaTime());
+//            sb.draw(title, 0, position.y);
+//            //I chose to to hard code to draw it at -350. This can be changed later to some fractional value.
+//            sb.draw(menuBar, 0, (GameDemo.HEIGHT - 355), GameDemo.WIDTH, menuBar.getHeight());
+//        }
 
     }
 

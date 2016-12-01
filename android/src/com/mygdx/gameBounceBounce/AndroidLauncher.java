@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.gameBounceBounce;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,9 +8,8 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.GameHelper;
-import com.mygdx.game.States.PlayServices;
 
-public class AndroidLauncher extends AndroidApplication implements PlayServices {
+public class AndroidLauncher extends AndroidApplication implements com.mygdx.gameBounceBounce.States.PlayServices {
 
 	private final static int requestCode = 1;
 	private GameHelper gameHelper;
@@ -95,12 +94,17 @@ public class AndroidLauncher extends AndroidApplication implements PlayServices 
 	@Override
 	public void unlockAchievement() {
 		Games.Achievements.unlock(gameHelper.getApiClient(),
-				getString(R.string.achievement_n_o_o_b));
+				getString(R.string.achievement_future_esports_legend ));
 
 	}
 
 	@Override
 	public void submitScore(int highScore) {
+		if (isSignedIn() == true)
+		{
+			Games.Leaderboards.submitScore(gameHelper.getApiClient(),
+					getString(R.string.leaderboard_highscores), highScore);
+		}
 
 	}
 

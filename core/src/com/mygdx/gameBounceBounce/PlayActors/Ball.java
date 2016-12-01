@@ -1,30 +1,14 @@
-package com.mygdx.game.PlayActors;
+package com.mygdx.gameBounceBounce.PlayActors;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.mygdx.game.GameDemo;
-import com.mygdx.game.States.PlayState;
 
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -67,10 +51,9 @@ public class Ball {
         ballSprite.setPosition((random.nextInt(300) - 300), random.nextInt(4000) - 5500);
         System.out.println(ballSprite.getX() + " Y "  + ballSprite.getY());
 
-
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set((ballSprite.getX() + ballSprite.getWidth()/2) / PlayState.PIXELS_TO_METERS, (ballSprite.getY() + ballSprite.getHeight()/2) / PlayState.PIXELS_TO_METERS);
+        bodyDef.position.set((ballSprite.getX() + ballSprite.getWidth()/2) / com.mygdx.gameBounceBounce.States.PlayState.PIXELS_TO_METERS, (ballSprite.getY() + ballSprite.getHeight()/2) / com.mygdx.gameBounceBounce.States.PlayState.PIXELS_TO_METERS);
         ballBody = world.createBody(bodyDef);
         ballBody.setLinearVelocity(new Vector2(random.nextInt(10) -5, 0));
 
@@ -89,18 +72,24 @@ public class Ball {
 
         float chance = random.nextFloat() * 100;
 
-        if(chance < 75) { //0 - 50 percent chance
+        if(chance < 50) { //0 - 50 percent chance
             powerUpText = null;
             powerUpType = "none";
         }
 
-        else if(chance < 85) { //75 - 85
+        else if(chance < 65) { //75 - 85
             powerUpText = new Sprite(new Texture("powerups/heart-image.png"));
             powerUpText.setScale(0.5f,0.5f);
             powerUpType = "heart";
         }
 
-        else { //85 - 90
+        else if(chance < 85) {
+            powerUpText = new Sprite(new Texture("powerups/bonus.png"));
+            //powerUpText.setScale(0.f, 0.75f);
+            powerUpType = "bonus";
+        }
+
+        else {
             powerUpText = new Sprite(new Texture("powerups/cherrybomb.png"));
             powerUpText.setScale(0.5f,0.5f);
             powerUpType = "bomb";

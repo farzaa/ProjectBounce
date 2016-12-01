@@ -1,4 +1,4 @@
-package com.mygdx.game.States;
+package com.mygdx.gameBounceBounce.States;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 

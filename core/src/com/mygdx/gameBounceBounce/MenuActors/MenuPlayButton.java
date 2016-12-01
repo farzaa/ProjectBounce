@@ -1,20 +1,16 @@
-package com.mygdx.game.MenuActors;
+package com.mygdx.gameBounceBounce.MenuActors;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.mygdx.game.GameDemo;
-import com.mygdx.game.States.GameStateManager;
-import com.mygdx.game.States.MenuState;
-import com.mygdx.game.States.PlayServices;
-import com.mygdx.game.States.PlayState;
+import com.mygdx.gameBounceBounce.GameDemo;
+import com.mygdx.gameBounceBounce.States.GameStateManager;
+import com.mygdx.gameBounceBounce.States.PlayServices;
+import com.mygdx.gameBounceBounce.States.PlayState;
 
 /**
  * Created by flynn on 11/18/16.
@@ -26,7 +22,7 @@ public class MenuPlayButton extends Actor {
 
     public PlayServices playservices;
 
-    public MenuPlayButton (PlayServices playServices, GameStateManager gsmCurr, final MenuState menustate) {
+    public MenuPlayButton (PlayServices playServices, GameStateManager gsmCurr, final com.mygdx.gameBounceBounce.States.MenuState menustate) {
         this.gsm = gsmCurr;
         this.playservices = playServices;
         setTouchable(Touchable.enabled);

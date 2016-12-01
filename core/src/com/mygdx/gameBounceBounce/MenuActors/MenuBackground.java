@@ -1,17 +1,11 @@
-package com.mygdx.game.MenuActors;
+package com.mygdx.gameBounceBounce.MenuActors;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.GameDemo;
+import com.mygdx.gameBounceBounce.GameDemo;
 
 /**
  * Created by flynn on 11/18/16.

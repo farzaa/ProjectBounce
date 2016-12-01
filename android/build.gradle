@@ -1,10 +1,10 @@
 android {
     signingConfigs {
         config {
-            keyAlias 'Project Bounce Key'
-            keyPassword 'farzaisking'
-            storeFile file('/Users/flynn/Documents/ProjectBounce/android/pass.jks')
-            storePassword 'farzaisking'
+            keyAlias 'BounceKey'
+            keyPassword 'master'
+            storeFile file('/Users/flynn/Documents/signed.jks')
+            storePassword 'master'
         }
     }
     buildToolsVersion "24.0.3"
@@ -23,7 +23,7 @@ android {
         instrumentTest.setRoot('tests')
     }
     defaultConfig {
-        applicationId "com.mygdx.game"
+        applicationId "com.mygdx.gameBounceBounce"
         minSdkVersion 15
         targetSdkVersion 23
     }
@@ -81,7 +81,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.mygdx.game/com.mygdx.game.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.mygdx.game/AndroidLauncher'
 }
 // sets up the Android Eclipse project, using the old Ant based build.
 eclipse {

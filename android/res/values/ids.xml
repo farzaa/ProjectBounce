@@ -5,11 +5,15 @@ Save this file as res/values/games-ids.xml in your project.
 -->
 <resources>
     <string name="app_id">18503418408</string>
-    <string name="package_name">com.mygdx.game</string>
-    <string name="achievement_n_o_o_b">CggIqISP90QQAhAB</string>
+    <string name="package_name">com.mygdx.gameBounceBounce</string>
+    <string name="achievement_future_eathlete">CggIqISP90QQAhAB</string>
     <string name="achievement_semi_noob">CggIqISP90QQAhAC</string>
     <string name="achievement_admirable">CggIqISP90QQAhAD</string>
     <string name="achievement_semipro">CggIqISP90QQAhAE</string>
     <string name="achievement_pro">CggIqISP90QQAhAF</string>
+    <string name="achievement_future_korean_player">CggIqISP90QQAhAM</string>
+    <string name="achievement_future_baller">CggIqISP90QQAhAN</string>
+    <string name="achievement_future_esports_legends">CggIqISP90QQAhAO</string>
+    <string name="achievement_future_esports_legend">CggIqISP90QQAhAP</string>
     <string name="leaderboard_highscores">CggIqISP90QQAhAG</string>
 </resources>

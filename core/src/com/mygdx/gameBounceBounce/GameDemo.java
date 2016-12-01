@@ -1,20 +1,12 @@
-package com.mygdx.game;
+package com.mygdx.gameBounceBounce;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.States.GameStateManager;
-import com.mygdx.game.States.MenuState;
-import com.mygdx.game.States.PlayServices;
+import com.mygdx.gameBounceBounce.States.GameStateManager;
+import com.mygdx.gameBounceBounce.States.PlayServices;
 
 
 public class GameDemo extends ApplicationAdapter {
@@ -39,7 +31,7 @@ public class GameDemo extends ApplicationAdapter {
 			Gdx.app.log("debug", "Android Device recognized. Width/Height... " + WIDTH + " / " + HEIGHT);
 			batch = new SpriteBatch();
 			gsm = new GameStateManager();
-			gsm.push(new MenuState(playServices, gsm));
+			gsm.push(new com.mygdx.gameBounceBounce.States.MenuState(playServices, gsm));
 		}
 
 		else {

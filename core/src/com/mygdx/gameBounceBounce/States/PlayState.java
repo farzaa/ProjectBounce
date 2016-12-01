@@ -1,4 +1,4 @@
-package com.mygdx.game.States;
+package com.mygdx.gameBounceBounce.States;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -12,7 +12,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -24,8 +26,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.mygdx.game.PlayActors.Ball;
-import com.mygdx.game.PlayActors.BarBox2D;
+import com.mygdx.gameBounceBounce.PlayActors.Ball;
 
 import java.util.ArrayList;
 
@@ -40,7 +41,7 @@ public class PlayState extends State implements InputProcessor {
     public static final float PIXELS_TO_METERS = 100f;
 
     public World world;
-    GameStateManager gsm;
+    com.mygdx.gameBounceBounce.States.GameStateManager gsm;
     Camera camera;
     Box2DDebugRenderer debugRenderer;
     Matrix4 debugMatrix;
@@ -48,25 +49,36 @@ public class PlayState extends State implements InputProcessor {
 
     Texture playstateHUD;
     Texture livesTexture;
+
     Texture bombPower;
+    Rectangle bombPowerRegion;
+    boolean hasBombPower = false;
+
+    Texture bonusPower;
+    Rectangle bonusPowerRegion;
+    boolean hasBonusPower = false;
+    int scoreOffset = 0;
+    int bonusCounter = 0;
+
 
     ArrayList<Ball> ballList;
     ArrayList<Ball> destroyBallList;
 
     ArrayList<Texture> ballFrames;
 
-    BarBox2D bar;
-    BarBox2D bar2;
-    BarBox2D bar3;
+    com.mygdx.gameBounceBounce.PlayActors.BarBox2D bar;
+    com.mygdx.gameBounceBounce.PlayActors.BarBox2D bar2;
+    com.mygdx.gameBounceBounce.PlayActors.BarBox2D bar3;
 
-    int liveCount;
-    int score;
+    int liveCount = 3;
+    int score = 0;
 
     Music gameMusic;
     Music bounceSound;
     Music explosionSound;
     Music touchdownSound;
     Music nextWave;
+    Music bombsound;
 
 
     //we want to increase the number of balls that come down every wave, this keeps track of that number;
@@ -76,14 +88,14 @@ public class PlayState extends State implements InputProcessor {
 
     public PlayServices playservices;
 
-
-
-    public PlayState(PlayServices playservices, GameStateManager gsm) {
+    public PlayState(PlayServices playservices, com.mygdx.gameBounceBounce.States.GameStateManager gsm) {
         super(gsm);
         this.gsm = gsm;
         this.playservices = playservices;
 
         //playservices.unlockAchievement();
+        //playservices.submitScore(20);
+        //playservices.showScore();
 
         //Many tutorials say to this step, but things seems to be working fine without it.
         //Box2D.init();
@@ -92,6 +104,7 @@ public class PlayState extends State implements InputProcessor {
 
         //init power ups to black and white.
         bombPower = new Texture("powerups/cherrybomb-bw.png");
+        bonusPower = new Texture("powerups/bonus-bw.png");
 
         font = new BitmapFont();
         font.getData().setScale(5, 5);
@@ -128,12 +141,19 @@ public class PlayState extends State implements InputProcessor {
         touchdownSound = Gdx.audio.newMusic(Gdx.files.internal("audio/endzone.wav"));
         touchdownSound.setVolume(0.5f);
 
+        bombsound = Gdx.audio.newMusic(Gdx.files.internal("audio/bombsound.wav"));
+        bombsound.setVolume(0.5f);
+
         nextWave = Gdx.audio.newMusic(Gdx.files.internal("audio/nextwave.wav"));
-        nextWave.setVolume(1f);
+        nextWave.setVolume(0.5f);
 
         spawnBalls();
 
         powerUpList = new ArrayList<Object>();
+
+        bombPowerRegion = new Rectangle(-500, -900, 200, 200);
+        bonusPowerRegion =  new Rectangle(0, -900, 200, 200);
+
 
         //this contains all the logic for contact within the game.
         world.setContactListener(new ContactListener() {
@@ -169,7 +189,6 @@ public class PlayState extends State implements InputProcessor {
                         }
                     }
                 }
-
             }
 
             @Override
@@ -202,8 +221,24 @@ public class PlayState extends State implements InputProcessor {
         return false;
     }
 
+
+    //logic for touching powerups.
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+
+        Gdx.app.log("debug", "TOUCH: " + screenX + " " + screenY);
+
+        if(bombPowerRegion.contains(screenX - 540, screenY - 2700) && hasBombPower == true ) {
+            bombPowerUp();
+            hasBombPower = false;
+            bombPower = new Texture("powerups/cherrybomb-bw.png");
+        }
+
+        else if(bonusPowerRegion.contains(screenX - 540, screenY - 2700) && hasBonusPower == true ) {
+            hasBonusPower = false;
+            bonusPower = new Texture("powerups/bonus-bw.png");
+            bonusCounter = 2;
+        }
         return false;
     }
 
@@ -273,11 +308,11 @@ public class PlayState extends State implements InputProcessor {
 
         //Now create the bars
         //pass in world and the y coordinates of the bar. The x is not passed since it should all be centered already.
-        bar = new BarBox2D(world, 0, 10);
+        bar = new com.mygdx.gameBounceBounce.PlayActors.BarBox2D(world, 0, 10);
 
-        bar2 = new BarBox2D(world, 400, 0);
+        bar2 = new com.mygdx.gameBounceBounce.PlayActors.BarBox2D(world, 400, 0);
 
-        bar3 = new BarBox2D(world, -400, 0);
+        bar3 = new com.mygdx.gameBounceBounce.PlayActors.BarBox2D(world, -400, 0);
 
     }
 
@@ -319,7 +354,6 @@ public class PlayState extends State implements InputProcessor {
             if(ballList.get(i).ballBody.getPosition().y > 8) {
                 ballList.get(i).destroyBoolAtomic.set(true);
                 touchdownSound.play();
-                score++;
 
                 //power up logic
                 if(ballList.get(i).powerUpText != null) {
@@ -331,9 +365,29 @@ public class PlayState extends State implements InputProcessor {
                     }
 
                     if(ballList.get(i).powerUpType.equals("bomb")) {
-                        bombPower = new Texture("powerups/cherrybomb.png");
+                        if(hasBombPower == false) {
+                            bombPower = new Texture("powerups/cherrybomb.png");
+                            hasBombPower = true;
+                        }
+                    }
+
+                    if(ballList.get(i).powerUpType.equals("bonus")) {
+                        if(hasBonusPower ==  false) {
+                            bonusPower = new Texture("powerups/bonus.png");
+                            hasBonusPower = true;
+                        }
                     }
                 }
+
+                if(bonusCounter != 0) {
+                    bonusCounter--;
+                    score = score + 2;
+                }
+
+                else {
+                    score++;
+                }
+
             }
 
             if (ballList.get(i).destroyBoolAtomic.get() == true) {
@@ -358,7 +412,7 @@ public class PlayState extends State implements InputProcessor {
     //if the ball touches the bar more than 10 times, it will be added to destroy list.
     public void checkBounceCount() {
         for(int i = 0; i < ballList.size(); i++) {
-            Gdx.app.log("debug", "BallCount ... " + ballList.get(i).bounceCounter);
+            //Gdx.app.log("debug", "BallCount ... " + ballList.get(i).bounceCounter);
             if(ballList.get(i).bounceCounter > 10) {
                 //we want to subtract from the life count upon a ball explosion.
                 explosionSound.play();
@@ -371,6 +425,8 @@ public class PlayState extends State implements InputProcessor {
     public void checkLiveCount() {
         if(liveCount == 0) {
             dispose();
+            playservices.submitScore(score);
+            playservices.showScore();
             gsm.set(new MenuState(playservices, gsm));
         }
     }
@@ -381,9 +437,6 @@ public class PlayState extends State implements InputProcessor {
 
             //TO DO: SUPER IMPORTANT: How do I dispose the old textures when setting the new ones? AH.
             ballList.get(i).ballSprite.setTexture(ballFrames.get(frame));
-
-
-
         }
     }
 
@@ -393,6 +446,22 @@ public class PlayState extends State implements InputProcessor {
             spawnBalls();
         }
     }
+
+    //logic for bar power up
+    public void bombPowerUp() {
+        bombsound.play();
+        for(int i = 0; i < ballList.size()/2; i++) {
+            score++;
+            destroyBallList.add(ballList.get(i));
+        }
+    }
+
+    public void checkScoreCount() {
+        if (score == 1) {
+            playservices.unlockAchievement();
+        }
+    }
+
 
     @Override
     protected void update(float dt) {
@@ -408,6 +477,7 @@ public class PlayState extends State implements InputProcessor {
         checkBalls();
         changeBallSprites();
         checkBallCount();
+        checkScoreCount();
 
         // Step the physics simulation forward at a rate of 60hz
         world.step(1f/60f, 6, 2);
@@ -464,6 +534,7 @@ public class PlayState extends State implements InputProcessor {
 
         //draw powerups
         sb.draw(bombPower, -500, -940, 150, 150);
+        sb.draw(bonusPower, -100, -965, 200, 200);
 
         sb.end();
         debugRenderer.render(world, debugMatrix);

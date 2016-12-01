@@ -1,4 +1,4 @@
-package com.mygdx.game.States;
+package com.mygdx.gameBounceBounce.States;
 
 /**
  * Created by flynn on 11/30/16.
